@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏷️ Lọc bài viết theo chủ đề - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">🏷️ Lọc bài viết theo chủ đề</div>
+      <a th:href="@{/}" class="back-link">← Trang chủ</a>
+    </div>
+  </header>
+
+  <div class="container two-col">
+    <aside class="sidebar">
+      <h2>📚 Chủ đề</h2>
+       <form method="get" th:action="@{/filter}" style="display:flex;flex-direction:column;gap:12px;">
+         <div class="topic-group">
+           <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+             <input type="checkbox" name="topics" th:value="${topic.id}"
+                    th:checked="${selectedTopics.contains(topic.id)}">
+             <span th:text="${topic.name}"></span>
+           </label>
+         </div>
+
+         <div class="sidebar-buttons" style="display:flex;flex-direction:column;gap:8px;">
+           <button type="submit">🔍 Lọc bài viết</button>
+           <a th:href="@{/}" class="btn secondary">← Quay lại</a>
+         </div>
+       </form>
+     </aside>
+
+     <main class="content">
+       <h2>📚 Kết quả lọc</h2>
+
+       <div th:if="${articles.empty}" class="empty-state">
+         <p>📭 Không có bài viết nào phù hợp với tiêu chí lọc của bạn</p>
+         <p style="font-size:14px;">Hãy chọn lại chủ đề hoặc quay lại trang chủ</p>
+       </div>
+
+       <div th:if="${!articles.empty}" class="articles-grid">
+         <a th:each="article : ${articles}"
+            th:href="@{/articles/{id}(id=${article.id})}"
+            class="article-card"
+            style="text-decoration:none;color:inherit;">
+           <h3 th:text="${article.title}"></h3>
+           <div class="article-meta">
+             <span>✍️ <span th:text="${article.author.name}"></span></span>
+             <span>📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+             <span>❤️ <span th:text="${article.likes.size()}"></span></span>
+           </div>
+         </a>
+       </div>
+     </main>
+   </div>
+</body>
+
+</html>

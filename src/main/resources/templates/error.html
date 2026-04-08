@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ Lỗi - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="auth-page" style="display:flex;align-items:center;justify-content:center;">
+<div class="error-container" style="padding:32px;max-width:560px;text-align:center;">
+    <h1 style="margin-bottom:8px;">⚠️ Oops, có lỗi xảy ra</h1>
+    <p th:text="${message}">Đã xảy ra lỗi không mong muốn.</p>
+    <p style="margin-top:18px;">
+        <a th:href="@{/}" class="btn secondary">← Về trang chủ</a>
+    </p>
+</div>
+</body>
+</html>

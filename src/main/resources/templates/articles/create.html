@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✏️ Tạo bài viết - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+    </div>
+  </header>
+
+  <div class="container two-col">
+    <main class="main-content">
+      <h1>✏️ Tạo bài viết mới</h1>
+
+      <form th:action="@{/articles}" method="post" th:object="${article}" class="create-form">
+        <div class="form-group">
+          <label for="title">Tiêu đề</label>
+          <input type="text" id="title" th:field="*{title}" placeholder="Nhập tiêu đề..." required>
+          <div th:if="${#fields.hasErrors('title')}" class="error-message" th:errors="*{title}"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="content">Nội dung</label>
+          <textarea id="content" th:field="*{content}" rows="10" placeholder="Nhập nội dung..." required></textarea>
+          <div th:if="${#fields.hasErrors('content')}" class="error-message" th:errors="*{content}"></div>
+        </div>
+
+        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+        <script>
+          CKEDITOR.replace('content');
+        </script>
+
+        <div class="form-group">
+          <label>📚 Chủ đề</label>
+          <div class="topic-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
+            <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
+              <input type="checkbox" th:value="${topic.id}" th:field="*{topics}">
+              <span th:text="${topic.name}"></span>
+            </label>
+          </div>
+          <div th:if="${#fields.hasErrors('topics')}" class="error-message" th:errors="*{topics}"></div>
+        </div>
+
+        <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="submit">✓ Đăng bài</button>
+          <a th:href="@{/}" class="cancel-btn">Hủy</a>
+        </div>
+      </form>
+    </main>
+
+    <aside class="sidebar">
+       <div class="sidebar-box">
+         <h3>ℹ️ Hướng dẫn viết bài</h3>
+         <ul style="margin-left:18px;line-height:1.8;">
+           <li>Tiêu đề nên ngắn gọn, súc tích</li>
+           <li>Nội dung có thể dùng Markdown hoặc HTML cơ bản</li>
+           <li>Chọn ít nhất một chủ đề để bài viết dễ tìm kiếm</li>
+         </ul>
+       </div>
+
+       <a th:href="@{/}" class="back-btn">← Quay lại trang chủ</a>
+    </aside>
+  </div>
+</body>
+
+</html>

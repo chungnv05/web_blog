@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Quản lý Bài viết - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">⚙️ Quản lý Bài viết</div>
+            <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
+        </div>
+    </header>
+
+    <main class="admin-shell">
+        <section class="admin-table-wrap">
+            <h2>📝 Quản lý bài viết</h2>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Tiêu đề</th>
+                    <th>Tác giả</th>
+                    <th>Hành động</th>
+                </tr>
+                <tr th:each="article : ${articles}">
+                    <td th:text="${article.id}"></td>
+                    <td th:text="${article.title}"></td>
+                    <td th:text="${article.author.username}"></td>
+                    <td>
+                        <form th:action="@{/admin/articles/{id}/delete(id=${article.id})}" method="post" class="inline-form">
+                            <button type="submit" class="danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

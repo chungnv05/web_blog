@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📖 Blog - Trang chủ</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <form method="get" th:action="@{/}" class="header-nav">
+        <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
+        <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
+        <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
+      </form>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>📝 Danh sách bài viết mới nhất</h1>
+
+    <section class="search-section" style="padding: 20px;">
+      <form method="get" th:action="@{/search}" class="search-form">
+        <input type="text" name="keyword" placeholder="🔍 Tìm kiếm bài viết...">
+        <button type="submit">Tìm kiếm</button>
+        <a th:href="@{/filter}" class="btn info">🏷️ Lọc chủ đề</a>
+        <a th:href="@{/articles/new}" class="btn warn">✏️ Tạo bài</a>
+      </form>
+    </section>
+
+    <div class="posts-list">
+      <div th:if="${posts.empty}" class="empty-state">
+        <p>📭 Chưa có bài viết nào. Hãy là người đầu tiên viết bài!</p>
+      </div>
+
+      <div th:each="post : ${posts}">
+        <a th:href="@{/articles/{id}(id=${post.id})}" class="post-card">
+          <h3 th:text="${post.title}"></h3>
+          <div class="post-meta">
+            <strong th:text="${post.author.name}"></strong>
+            • <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+          </div>
+          <div class="post-topics" th:if="${post.topics}">
+            <span th:each="topic : ${post.topics}" class="topic-tag" th:text="${topic.name}"></span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <a th:if="${pageObj.hasPrevious()}" th:href="@{/(page=${pageObj.number-1})}">← Trang trước</a>
+      <span>Trang <span th:text="${pageObj.number}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
+      <a th:if="${pageObj.hasNext()}" th:href="@{/(page=${pageObj.number+1})}">Trang sau →</a>
+    </div>
+  </div>
+</body>
+
+</html>

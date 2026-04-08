@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Admin Dashboard - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">⚙️ Admin</div>
+            <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
+        </div>
+    </header>
+
+    <main class="admin-shell">
+        <h2>📊 Trang quản trị chính</h2>
+        <div class="admin-nav">
+            <a th:href="@{/admin/topics}">📚 Quản lý Chủ đề</a>
+            <a th:href="@{/admin/articles}">📝 Quản lý Bài viết</a>
+            <a th:href="@{/admin/users}">👥 Quản lý Người dùng</a>
+            <a th:href="@{/admin/admins}">🔐 Quản lý Quản trị viên</a>
+        </div>
+        <section class="admin-card">
+            <p>💡 Chọn một mục để bắt đầu quản lý nội dung hệ thống.</p>
+        </section>
+    </main>
+</body>
+</html>

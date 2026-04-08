@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Quản lý Chủ đề - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">⚙️ Quản lý Chủ đề</div>
+            <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
+        </div>
+    </header>
+
+    <main class="admin-shell admin-layout">
+        <section class="admin-table-wrap">
+            <h2>Danh sách chủ đề</h2>
+             <table>
+                 <tr>
+                     <th>ID</th>
+                     <th>Tên chủ đề</th>
+                     <th>Hành động</th>
+                 </tr>
+                 <tr th:each="topic : ${topics}">
+                     <td th:text="${topic.id}"></td>
+                     <td th:text="${topic.name}"></td>
+                     <td>
+                         <form th:action="@{/admin/topics/{id}/delete(id=${topic.id})}" method="post" class="inline-form">
+                             <button type="submit" class="danger">Xóa</button>
+                         </form>
+                     </td>
+                 </tr>
+             </table>
+         </section>
+
+         <section class="admin-form">
+             <h3>Thêm chủ đề mới</h3>
+             <form th:action="@{/admin/topics}" method="post" th:object="${newTopic}">
+                 <label for="name">Tên chủ đề</label>
+                 <input type="text" id="name" th:field="*{name}" required>
+                 <button type="submit" style="margin-top:10px;">✓ Thêm</button>
+             </form>
+         </section>
+     </main>
+</body>
+</html>

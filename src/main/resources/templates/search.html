@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 Kết quả tìm kiếm - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="search-info" style="padding: 18px; margin-bottom: 18px;">
+      <h2>🔍 Kết quả tìm kiếm</h2>
+      <p>Từ khóa: "<strong th:text="${keyword}"></strong>"</p>
+    </div>
+
+    <div class="section" style="padding: 20px; margin-bottom: 18px;">
+      <h2>👥 Người dùng (<span th:text="${users.totalElements}"></span>)</h2>
+
+      <div th:if="${users.empty}" class="empty-state">
+        <p>😔 Không tìm thấy người dùng nào</p>
+      </div>
+
+      <div th:if="${!users.empty}" class="user-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+        <div th:each="user : ${users}" class="card" style="padding:12px;text-align:center;">
+          <a th:href="@{/users/{id}(id=${user.id})}" th:text="${user.name}"></a>
+          <small style="color:#64748b;" th:text="${user.mark} + ' ⭐'"></small>
+        </div>
+      </div>
+
+      <div class="pagination" style="margin-top: 25px;" th:if="${users.totalPages > 1}">
+        <a th:if="${users.hasPrevious()}"
+           th:href="@{/search(keyword=${keyword},page_users=${users.number-1})}">← Trước</a>
+        <span th:text="${users.number} + '/' + ${users.totalPages}"></span>
+        <a th:if="${users.hasNext()}"
+           th:href="@{/search(keyword=${keyword},page_users=${users.number+1})}">Sau →</a>
+      </div>
+    </div>
+
+    <div class="section" style="padding: 20px;">
+      <h2>📝 Bài viết (<span th:text="${articles.totalElements}"></span>)</h2>
+
+      <div th:if="${articles.empty}" class="empty-state">
+        <p>😔 Không tìm thấy bài viết nào</p>
+      </div>
+
+      <div th:if="${!articles.empty}">
+        <div th:each="article : ${articles}" class="article-item">
+          <h3>
+            <a th:href="@{/articles/{id}(id=${article.id})}" th:text="${article.title}"></a>
+          </h3>
+          <div class="article-meta">
+            <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
+            <span> • 📅 Ngày: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+            <span> • ❤️ Lượt thích: <span th:text="${article.likes.size()}"></span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination" style="margin-top: 25px;" th:if="${articles.totalPages > 1}">
+        <a th:if="${articles.hasPrevious()}"
+           th:href="@{/search(keyword=${keyword},page_articles=${articles.number-1})}">← Trước</a>
+        <span th:text="${articles.number} + '/' + ${articles.totalPages}"></span>
+        <a th:if="${articles.hasNext()}"
+           th:href="@{/search(keyword=${keyword},page_articles=${articles.number+1})}">Sau →</a>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

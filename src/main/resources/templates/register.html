@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✍️ Đăng ký - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="auth-page" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="register-container">
+    <div class="register-header">
+      <div class="logo">📖 Blog</div>
+      <h2>Tạo tài khoản</h2>
+      <p>Tham gia cộng đồng Blog hiện đại</p>
+    </div>
+
+    <form th:action="@{/register}" method="post" th:object="${user}" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="form-group">
+        <label for="username">Tên đăng nhập</label>
+        <input type="text" id="username" th:field="*{username}" required>
+        <ul th:if="${#fields.hasErrors('username')}" class="errorlist">
+          <li th:each="err : ${#fields.errors('username')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" th:field="*{password}" required>
+        <ul th:if="${#fields.hasErrors('password')}" class="errorlist">
+          <li th:each="err : ${#fields.errors('password')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Xác nhận mật khẩu</label>
+        <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required>
+        <ul th:if="${#fields.hasErrors('confirmPassword')}" class="errorlist">
+          <li th:each="err : ${#fields.errors('confirmPassword')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Họ và tên</label>
+        <input type="text" id="name" th:field="*{name}" required>
+        <ul th:if="${#fields.hasErrors('name')}" class="errorlist">
+          <li th:each="err : ${#fields.errors('name')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label for="gender">Giới tính</label>
+          <select id="gender" th:field="*{gender}">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+          <ul th:if="${#fields.hasErrors('gender')}" class="errorlist">
+            <li th:each="err : ${#fields.errors('gender')}" th:text="${err}"></li>
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label for="birth">Ngày sinh</label>
+          <input type="date" id="birth" th:field="*{birth}">
+          <ul th:if="${#fields.hasErrors('birth')}" class="errorlist">
+            <li th:each="err : ${#fields.errors('birth')}" th:text="${err}"></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" th:field="*{email}" required>
+        <ul th:if="${#fields.hasErrors('email')}" class="errorlist">
+          <li th:each="err : ${#fields.errors('email')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <button type="submit" style="width:100%;margin-top:8px;">✓ Đăng ký ngay</button>
+    </form>
+
+    <div class="login-link">
+      <p>Bạn đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a></p>
+    </div>
+  </div>
+</body>
+</html>
+
