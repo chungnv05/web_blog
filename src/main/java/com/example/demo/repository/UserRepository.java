@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);   // ✅ trả về Optional
+    Optional<User> findByEmail(String email);         // ✅ Tìm theo email
     List<User> findAllByOrderByMarkDesc();            // ✅ danh sách theo mark giảm dần
     Page<User> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
     boolean existsByUsername(String username);
