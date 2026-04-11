@@ -15,10 +15,10 @@
   </header>
 
   <div class="container">
-    <h1>🏆 Bảng xếp hạng người dùng</h1>
+    <h1>Bảng xếp hạng người dùng</h1>
 
     <div th:if="${#lists.isEmpty(users)}" class="empty-state">
-      <p>📭 Không có người dùng nào</p>
+      <p>Không có người dùng nào</p>
     </div>
 
     <div th:if="${!#lists.isEmpty(users)}" class="table-container">
@@ -26,10 +26,10 @@
         <thead>
           <tr>
             <th width="10%">#</th>
-            <th width="35%">👤 Tên người dùng</th>
-            <th class="email-column" width="30%">📧 Email</th>
-            <th class="gender-column" width="15%">⚧️ Giới tính</th>
-            <th width="10%">⭐ Điểm</th>
+            <th width="35%">Tên người dùng</th>
+            <th class="email-column" width="30%">Email</th>
+            <th class="gender-column" width="15%">Giới tính</th>
+            <th width="10%">Điểm</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +41,7 @@
             <td class="email-column" th:text="${user.email}"></td>
             <td class="gender-column" th:text="${user.gender != null ? user.gender : '—'}"></td>
             <td class="mark-cell">
-              <span th:text="${user.mark}"></span> ⭐
+              <span th:text="${user.mark}"></span>
             </td>
           </tr>
         </tbody>

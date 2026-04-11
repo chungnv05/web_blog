@@ -19,23 +19,23 @@
       <div class="user-avatar" style="height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f8f6a,#3ba17a);border-radius:12px;color:#fff;font-size:48px;">👤</div>
       <h2 th:text="${user.name}"></h2>
 
-      <div class="info-item">
-        <div class="info-label">✍️ Tên đăng nhập</div>
+      <div class="info-item" th:if="${isOwner}">
+        <div class="info-label">Tên đăng nhập:</div>
         <div class="info-value" th:text="${user.username}"></div>
       </div>
 
       <div class="info-item">
-        <div class="info-label">📧 Email</div>
+        <div class="info-label">Email:</div>
         <div class="info-value" th:text="${user.email}"></div>
       </div>
 
       <div th:if="${user.gender}" class="info-item">
-        <div class="info-label">⚧️ Giới tính</div>
+        <div class="info-label">Giới tính:</div>
         <div class="info-value" th:text="${user.gender}"></div>
       </div>
 
       <div th:if="${user.birth}" class="info-item">
-        <div class="info-label">🎂 Ngày sinh</div>
+        <div class="info-label">Ngày sinh:</div>
         <div class="info-value" th:text="${#temporals.format(user.birth,'dd/MM/yyyy')}"></div>
 
       </div>
@@ -64,10 +64,10 @@
     </aside>
 
     <main class="content">
-      <h2>📝 Bài viết của <span th:text="${user.name}"></span></h2>
+      <h2>Bài viết của <span th:text="${user.name}"></span></h2>
 
        <div th:if="${#lists.isEmpty(user.articles)}" class="empty-state">
-         <p>📭 <span th:text="${user.name}"></span> chưa viết bài viết nào</p>
+         <p><span th:text="${user.name}"></span> chưa viết bài viết nào</p>
        </div>
 
      <div th:if="${user.articles != null and !#lists.isEmpty(user.articles)}" class="articles-list">
@@ -76,9 +76,9 @@
           class="article-item">
          <h3 th:text="${article.title}"></h3>
          <div class="article-meta">
-           <span>📅 Ngày: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
-           <span>❤️ Thích: <span th:text="${article.likes.size()}"></span></span>
-           <span>💬 Bình luận: <span th:text="${article.comments.size()}"></span></span>
+           <span>Ngày: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+           <span>Thích: <span th:text="${article.likes.size()}"></span></span>
+           <span>Bình luận: <span th:text="${article.comments.size()}"></span></span>
          </div>
        </a>
      </div>
