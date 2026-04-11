@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h2>🕒 Lịch sử xem bài viết</h2>
+        <div class="history-list">
+            <div th:each="item : ${historyList}" class="card" style="margin-bottom: 10px;">
+                <a th:href="@{/articles/{id}(id=${item.article.id})}" th:text="${item.article.title}"></a>
+                <small class="text-muted" th:text="${#temporals.format(item.viewedAt, 'dd/MM/yyyy HH:mm')}"></small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
