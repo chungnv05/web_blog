@@ -12,6 +12,7 @@ import java.util.List;
 
 
 @Controller
+@RequestMapping("/articles")
 public class ArticlesController {
 
     private ArticleService articleService;
@@ -19,19 +20,23 @@ public class ArticlesController {
     private CommentService commentService;
     private LikeService likeService;
     private TopicService topicService;
+    private SeriesService seriesService;
+    private ReportService reportService;
 
-    public ArticlesController(ArticleService articleService, UserService userService, CommentService commentService, LikeService likeService, TopicService topicService) {
+    public ArticlesController(ArticleService articleService, UserService userService, CommentService commentService, LikeService likeService, TopicService topicService, SeriesService seriesService, ReportService reportService) {
         this.articleService = articleService;
         this.userService = userService;
         this.commentService = commentService;
         this.likeService = likeService;
         this.topicService = topicService;
+        this.seriesService = seriesService;
+        this.reportService = reportService;
 
     }
 
 
     // Hiển thị form tạo bài viết
-    @GetMapping("/articles/new")
+    @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("article", new Article());
         List<Topic> topics = topicService.findAll();
@@ -40,7 +45,7 @@ public class ArticlesController {
     }
 
     // Xử lý submit form tạo bài viết
-    @PostMapping("/articles")
+    @PostMapping("/new")
     public String createArticle(@ModelAttribute("article") Article article,
                                 HttpSession session,
                                 @RequestParam(value = "topics", required = false) List<Long> topicIds) {
@@ -66,8 +71,8 @@ public class ArticlesController {
         return "redirect:/"; // sau khi tạo xong quay về trang chủ
     }
 
-    // 📝 Chi tiết bài viết
-    @GetMapping("/articles/{id}")
+    // Chi tiết bài viết
+    @GetMapping("/{id}")
     public String articleDetail(@PathVariable Long id,
                                 HttpSession session,
                                 Model model) {
@@ -81,11 +86,17 @@ public class ArticlesController {
         // Kiểm tra người dùng hiện tại đã thích bài viết chưa
         boolean userLikedArticle = false;
         boolean isAuthenticated = false;
+        boolean isOwner = false;
+        boolean isAdmin = false;
 
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser != null) {
             isAuthenticated = true;
             userLikedArticle = likeService.existsByUserAndArticle(currentUser, article);
+            // Kiểm tra xem user có phải là tác giả của bài viết không
+            isOwner = currentUser.getId().equals(article.getAuthor().getId());
+            // Kiểm tra xem user có phải admin không
+            isAdmin = currentUser.getRole() == Role.ADMIN;
         }
 
         // Truyền dữ liệu cho template
@@ -93,12 +104,14 @@ public class ArticlesController {
         model.addAttribute("comments", comments);
         model.addAttribute("userLikedArticle", userLikedArticle);
         model.addAttribute("isAuthenticated", isAuthenticated);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isAdmin", isAdmin);
 
         return "articles/article"; // render file articles/article.html
     }
 
     // 💬 Tạo comment
-    @PostMapping("/articles/{id}/comments")
+    @PostMapping("/{id}/comments")
     public String createComment(@PathVariable Long id,
                                 @RequestParam("content") String content,
                                 HttpSession session) {
@@ -125,8 +138,8 @@ public class ArticlesController {
         return "redirect:/articles/" + id;
     }
 
-    // ❤️ Like bài viết
-    @PostMapping("/articles/{id}/like")
+    //  Like bài viết
+    @PostMapping("{id}/like")
     public String likeArticle(@PathVariable Long id, HttpSession session) {
         // Lấy user hiện tại từ session
         User currentUser = (User) session.getAttribute("currentUser");
@@ -162,6 +175,50 @@ public class ArticlesController {
             userService.save(author);
             // lưu lại user author (nếu có UserService thì gọi save)
         }
+
+        // Quay lại trang chi tiết bài viết
+        return "redirect:/articles/" + id;
+    }
+
+
+    // Báo cáo bài viết
+    @PostMapping("/{id}/report")
+    public String reportArticle(@PathVariable Long id,
+                                @RequestParam(value = "reportReason", required = false) String reportReason,
+                                @RequestParam(value = "content", required = false) String content,
+                                HttpSession session) {
+        // Lấy user hiện tại từ session
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Lấy bài viết
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        // Tạo report mới
+        Report report = new Report();
+        report.setUser(currentUser);
+        report.setArticle(article);
+
+        // Kết hợp lý do báo cáo và chi tiết thêm
+        StringBuilder reportContent = new StringBuilder();
+        if (reportReason != null && !reportReason.isEmpty()) {
+            reportContent.append("Lý do: ").append(reportReason);
+        }
+        if (content != null && !content.isEmpty()) {
+            if (reportContent.length() > 0) {
+                reportContent.append("\n\n");
+            }
+            reportContent.append("Chi tiết: ").append(content);
+        }
+
+        report.setContent(reportContent.toString());
+        report.setCreatedAt(LocalDateTime.now());
+
+        // Lưu report
+        reportService.save(report);
 
         // Quay lại trang chi tiết bài viết
         return "redirect:/articles/" + id;

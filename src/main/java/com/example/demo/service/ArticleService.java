@@ -56,6 +56,8 @@ public class ArticleService {
     public List<Article> findByTopicIds(List<Long> topicIds) {
         return articleRepository.findDistinctByTopics_IdIn(topicIds);
     }
+
+
     
     // getter / setter
     public void deleteArticle(Long id) {

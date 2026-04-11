@@ -19,14 +19,26 @@
   </header>
 
   <div class="container">
-    <h1>📝 Danh sách bài viết mới nhất</h1>
+    <div th:if="${isAdmin}" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:12px;padding:24px;margin-bottom:30px;color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;">
+        <div>
+          <h2 style="margin:0 0 8px 0;font-size:24px;font-weight:700;">Bảng quản trị Admin</h2>
+          <p style="margin:0;font-size:14px;opacity:0.95;">Quản lý hệ thống từ đây</p>
+        </div>
+        <a th:href="@{/admin}" style="background:#fff;color:#667eea;padding:12px 24px;border-radius:10px;font-weight:600;text-decoration:none;cursor:pointer;transition:all 0.3s;display:inline-block;">
+          Vào Dashboard
+        </a>
+      </div>
+    </div>
+
+    <h1>Danh sách bài viết mới nhất</h1>
 
     <section class="search-section" style="padding: 20px;">
       <form method="get" th:action="@{/search}" class="search-form">
         <input type="text" name="keyword" placeholder="🔍 Tìm kiếm bài viết...">
         <button type="submit">Tìm kiếm</button>
-        <a th:href="@{/filter}" class="btn info">🏷️ Lọc chủ đề</a>
-        <a th:href="@{/articles/new}" class="btn warn">✏️ Tạo bài</a>
+        <a th:href="@{/filter}" class="btn info">Lọc chủ đề</a>
+        <a th:href="@{/articles/new}" class="btn warn">Tạo bài</a>
       </form>
     </section>
 

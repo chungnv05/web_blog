@@ -22,14 +22,17 @@ public class MainController {
     private final ArticleService articleService;
     private final UserService userService;
     private final TopicService topicService;
+    private final ReportService reportService;
     private final PasswordEncoder passwordEncoder;
 
     public MainController(ArticleService articleService, UserService userService,
                           TopicService topicService, CommentService commentService,
-                          LikeService likeService, PasswordEncoder passwordEncoder) {
+                          LikeService likeService, ReportService reportService,
+                          PasswordEncoder passwordEncoder) {
         this.articleService = articleService;
         this.userService = userService;
         this.topicService = topicService;
+        this.reportService = reportService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -120,6 +123,11 @@ public class MainController {
 
         String form = request.getParameter("form");
 
+        // Kiểm tra xem có phải admin không
+        User currentUser = (User) session.getAttribute("currentUser");
+        boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
+        model.addAttribute("isAdmin", isAdmin);
+
         // Nếu không có tham số GET => hiển thị danh sách bài viết mới nhất
         if (form == null) {
             Page<Article> pageObj = articleService.findAll(PageRequest.of(page, 10));
@@ -175,9 +183,20 @@ public class MainController {
 
     // ✅ Chi tiết user
     @GetMapping("/users/{id}")
-    public String userDetail(@PathVariable Long id, Model model) {
+    public String userDetail(@PathVariable Long id,
+                           HttpSession session,
+                           Model model) {
         User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Kiểm tra xem có phải admin không
+        boolean isAdmin = false;
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
+            isAdmin = true;
+        }
+
         model.addAttribute("user", user);
+        model.addAttribute("isAdmin", isAdmin);
         return "users/user";
     }
 
@@ -258,150 +277,3 @@ public class MainController {
 
 
 
-/*
-package com.example.demo.controller;
-
-import com.example.demo.entity.*;
-import com.example.demo.service.*;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-@Controller
-public class MainController {
-    private final UserService userService;
-    private final ArticleService articleService;
-    private final TopicService topicService;
-    private final CommentService commentService;
-    private final LikeService likeService;
-
-    public MainController(UserService userService,
-                          ArticleService articleService,
-                          TopicService topicService,
-                          CommentService commentService,
-                          LikeService likeService) {
-        this.userService = userService;
-        this.articleService = articleService;
-        this.topicService = topicService;
-        this.commentService = commentService;
-        this.likeService = likeService;
-    }
-
-    // 🏠 Trang chủ
-    @GetMapping("/")
-    public String home(HttpServletRequest request,
-                       HttpSession session,
-                       Model model,
-                       @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page) {
-
-        String form = request.getParameter("form");
-
-        // Nếu không có tham số GET => hiển thị danh sách bài viết mới nhất
-        if (form == null) {
-            Page<Article> pageObj = articleService.findAll(PageRequest.of(page, 10));
-            model.addAttribute("posts", pageObj.getContent());
-            model.addAttribute("pageObj", pageObj);
-            return "home"; // render home.html
-        }
-
-        // Nếu có tham số GET => xử lý theo giá trị form
-        switch (form) {
-            case "search":
-                String keyword = request.getParameter("keyword");
-                Page<Article> searchResults = articleService.search(keyword, PageRequest.of(page, 10));
-                model.addAttribute("posts", searchResults.getContent());
-                model.addAttribute("pageObj", searchResults);
-                return "home";
-
-            case "logout":
-                session.invalidate();
-                return "redirect:/login";
-
-            case "create":
-                return "redirect:/articles/new";
-
-            case "filter":
-                return "redirect:/filter";
-
-            case "user":
-                return "redirect:/user";
-
-            case "BXH":
-                return "redirect:/users/rank";
-
-            default:
-                Page<Article> defaultPage = articleService.findAll(PageRequest.of(page, 10));
-                model.addAttribute("posts", defaultPage.getContent());
-                model.addAttribute("pageObj", defaultPage);
-                return "home";
-        }
-    }
-
-    // 👤 Danh sách người dùng
-    @GetMapping("/users")
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.findAll());
-        return "user_list";
-    }
-
-    // 👤 Chi tiết người dùng
-    @GetMapping("/users/{id}")
-    public String getUser(@PathVariable Long id, Model model) {
-        User user = userService.findById(id).orElseThrow();
-        model.addAttribute("user", user);
-        return "user";
-    }
-
-    // 📝 Danh sách bài viết
-    @GetMapping("/articles")
-    public String listArticles(Model model) {
-        model.addAttribute("articles", articleService.findAll());
-        return "article_list";
-    }
-
-    // 📝 Chi tiết bài viết
-    @GetMapping("/articles/{id}")
-    public String getArticle(@PathVariable Long id, Model model) {
-        Article article = articleService.findById(id).orElseThrow();
-        model.addAttribute("article", article);
-        return "article";
-    }
-
-    // 📝 Form tạo bài viết
-    @GetMapping("/articles/create")
-    public String createForm(Model model) {
-        model.addAttribute("article", new Article());
-        model.addAttribute("topics", topicService.findAll());
-        return "create";
-    }
-
-    // 📝 Lưu bài viết
-    @PostMapping("/articles")
-    public String saveArticle(@ModelAttribute Article article) {
-        articleService.save(article);
-        return "redirect:/articles";
-    }
-
-    // 💬 Thêm bình luận
-    @PostMapping("/comments")
-    public String saveComment(@ModelAttribute Comment comment) {
-        commentService.save(comment);
-        return "redirect:/articles/" + comment.getArticle().getId();
-    }
-
-    // ❤️ Thêm lượt thích
-    @PostMapping("/likes")
-    public String saveLike(@ModelAttribute Like like) {
-        likeService.save(like);
-        return "redirect:/articles/" + like.getArticle().getId();
-    }
-
-    // 📚 Danh sách chủ đề
-    @GetMapping("/topics")
-    public String listTopics(Model model) {
-        model.addAttribute("topics", topicService.findAll());
-        return "topic_list";
-    }
-}
-
-*/

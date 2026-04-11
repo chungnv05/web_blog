@@ -9,14 +9,20 @@
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">⚙️ Quản lý Người dùng</div>
+            <div class="logo">Quản lý Người dùng</div>
             <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
+            <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
         </div>
     </header>
 
     <main class="admin-shell">
         <section class="admin-table-wrap">
-            <h2>👥 Quản lý người dùng</h2>
+            <h2>Danh sách người dùng</h2>
+
+            <div th:if="${message}" style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:16px;margin-bottom:20px;color:#065f46;font-weight:600;">
+                <span th:text="${message}"></span>
+            </div>
+
             <table>
                 <tr>
                     <th>ID</th>
@@ -27,7 +33,7 @@
                 </tr>
                 <tr th:each="user : ${users}">
                     <td th:text="${user.id}"></td>
-                    <td th:text="${user.username}"></td>
+                    <td><a th:href="@{/users/{id}(id=${user.id})}" style="color:#059669;text-decoration:none;font-weight:600;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#059669'" th:text="${user.username}"></a></td>
                     <td th:text="${user.email}"></td>
                     <td th:text="${user.role}"></td>
                     <td>

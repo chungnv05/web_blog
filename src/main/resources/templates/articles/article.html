@@ -9,8 +9,8 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">📖 Blog</div>
-      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+      <div class="logo">Blog</div>
+      <a th:href="@{/}" class="back-link" style="color:#fff;">Quay lại trang chủ</a>
     </div>
   </header>
 
@@ -19,9 +19,9 @@
       <div class="article-header">
         <h1 th:text="${article.title}"></h1>
         <div class="article-meta" style="color:#64748b;display:flex;gap:12px;flex-wrap:wrap;">
-          <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
-          <span>📅 Ngày đăng: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
-          <span>📚 Chủ đề: <span th:text="${article.topics.size()}"></span></span>
+          <span>Tác giả: <strong><a th:href="@{/users/{id}(id=${article.author.id})}" style="color:#059669;text-decoration:none;font-weight:600;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#059669'" th:text="${article.author.name}"></a></strong></span>
+          <span>Ngày đăng: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
+          <span>Chủ đề: <span th:text="${article.topics.size()}"></span></span>
         </div>
       </div>
 
@@ -38,25 +38,33 @@
       <div class="article-body" th:utext="${article.content}"></div>
 
       <div class="like-section">
-        <div class="like-count">❤️ <strong th:text="${article.likes.size()}"></strong> người thích</div>
-        <div th:if="${isAuthenticated}" style="display:flex;gap:10px;">
+        <div class="like-count"><strong th:text="${article.likes.size()}"></strong> người thích</div>
+        <div th:if="${isAuthenticated}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
           <form th:action="@{/articles/{id}/like(id=${article.id})}" method="post" style="display: contents;">
             <button type="submit"
                     class="like-button"
                     th:classappend="${userLikedArticle} ? 'like-button-active' : 'like-button-inactive'"
                     style="padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s;">
-              <span th:text="${userLikedArticle} ? '♥️ Bỏ thích' : '🤍 Thích'"></span>
+              <span th:text="${userLikedArticle} ? 'Bỏ thích' : 'Thích'"></span>
             </button>
           </form>
-          <form th:action="@{/articles/{id}/report(id=${article.id})}" method="post" style="display:inline;">
-            <button type="submit"
-                    style="padding:10px 16px;border-radius:10px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
-              🚩 Báo cáo
+          <button th:if="${!isOwner && !isAdmin}" onclick="openReportModal()"
+                  style="padding:10px 16px;border-radius:10px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
+            Báo cáo
+          </button>
+          <a th:if="${isOwner}" th:href="@{/articles/{id}/add_to_series(id=${article.id})}"
+             style="padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:linear-gradient(135deg, #8b5cf6, #7c3aed);color:#fff;display:flex;align-items:center;gap:6px;text-decoration:none;transition:all 0.3s;">
+            Thêm vào Series
+          </a>
+          <form th:if="${isAdmin}" th:action="@{/admin/articles/{id}/delete(id=${article.id})}" method="post" style="display:inline;">
+            <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa bài viết này?')"
+                    style="padding:10px 16px;border-radius:10px;border:1px solid #ef4444;background:#fee2e2;color:#991b1b;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
+              Xóa bài viết
             </button>
           </form>
         </div>
         <div th:if="${!isAuthenticated}" class="login-prompt">
-          <a th:href="@{/login}">🔓 Đăng nhập để thích và báo cáo</a>
+          <a th:href="@{/login}">Đăng nhập để thích và báo cáo</a>
         </div>
       </div>
 
@@ -120,6 +128,172 @@
       <a th:href="@{/}" class="back-btn">← Quay lại trang chủ</a>
     </aside>
   </div>
+
+  <!-- Modal báo cáo bài viết -->
+  <div id="reportModal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+    <div class="modal-content" style="background:#fff;border-radius:12px;padding:32px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <h2 style="margin:0;font-size:24px;color:#1f2937;">🚩 Báo cáo bài viết</h2>
+        <button onclick="closeReportModal()" style="background:none;border:none;font-size:28px;cursor:pointer;color:#6b7280;">&times;</button>
+      </div>
+
+      <form id="reportForm" th:action="@{/articles/{id}/report(id=${article.id})}" method="post" onsubmit="handleReportSubmit(event)">
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-weight:600;margin-bottom:12px;color:#374151;">Chọn lý do báo cáo:</label>
+
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;hover:background:#f3f4f6;">
+              <input type="radio" name="reportReason" value="Vấn đề liên quan đến người dưới 18 tuổi" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Vấn đề liên quan đến người dưới 18 tuổi</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Bắt nạt, quấy rối" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Bắt nạt, quấy rối</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Tự tử hoặc tự hại bản thân" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Tự tử hoặc tự hại bản thân</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Nội dung bạo lực, gây kích động" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Nội dung bạo lực, gây kích động</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Bán hoặc quảng bá mặt hàng không hợp pháp" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Bán hoặc quảng bá mặt hàng không hợp pháp</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Nội dung nhạy cảm" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Nội dung nhạy cảm</span>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
+              <input type="radio" name="reportReason" value="Thông tin sai sự thật, lừa đảo" style="width:18px;height:18px;cursor:pointer;">
+              <span style="color:#374151;">Thông tin sai sự thật, lừa đảo</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-weight:600;margin-bottom:12px;color:#374151;">Chi tiết thêm (tùy chọn):</label>
+          <textarea name="content" class="comment-textarea" placeholder="Mô tả chi tiết lý do báo cáo..." style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:100px;"></textarea>
+        </div>
+
+        <div style="display:flex;gap:12px;">
+          <button type="button" onclick="closeReportModal()" style="flex:1;padding:12px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            Hủy
+          </button>
+          <button type="submit" style="flex:1;padding:12px;border:none;background:#ef4444;color:#fff;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            Gửi báo cáo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openReportModal() {
+      const modal = document.getElementById('reportModal');
+      modal.style.display = 'flex';
+    }
+
+    function closeReportModal() {
+      const modal = document.getElementById('reportModal');
+      modal.style.display = 'none';
+      // Reset form
+      document.getElementById('reportForm').reset();
+    }
+
+    function handleReportSubmit(event) {
+      event.preventDefault();
+
+      // Kiểm tra xem có chọn lý do không
+      const selectedReason = document.querySelector('input[name="reportReason"]:checked');
+      if (!selectedReason) {
+        alert('Vui lòng chọn lý do báo cáo');
+        return;
+      }
+
+      // Hiển thị thông báo success
+      const form = document.getElementById('reportForm');
+      const formData = new FormData(form);
+
+      // Submit form
+      form.submit();
+
+      // Hiển thị thông báo
+      setTimeout(() => {
+        showSuccessNotification();
+      }, 100);
+    }
+
+    function showSuccessNotification() {
+      // Tạo notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-weight: 600;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      `;
+      notification.textContent = 'Báo cáo đã được gửi thành công!';
+
+      document.body.appendChild(notification);
+
+      // Xóa notification sau 3 giây
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+    }
+
+    // Thêm CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Đóng modal khi click bên ngoài
+    document.getElementById('reportModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeReportModal();
+      }
+    });
+  </script>
 </body>
 
-</html>
