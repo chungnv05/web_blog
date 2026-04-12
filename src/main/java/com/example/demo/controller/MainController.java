@@ -196,7 +196,7 @@ public class MainController {
         return "users/user";
     }
 
-    // Follow user
+    // ✅ Follow user
     @PostMapping("/users/{id}/follow")
     public String followUser(@PathVariable Long id, HttpSession session) {
         User currentUser = (User) session.getAttribute("currentUser");
@@ -206,7 +206,7 @@ public class MainController {
         return "redirect:/users/" + id;
     }
 
-    // Unfollow user
+    // ✅ Unfollow user
     @PostMapping("/users/{id}/unfollow")
     public String unfollowUser(@PathVariable Long id, HttpSession session) {
         User currentUser = (User) session.getAttribute("currentUser");
