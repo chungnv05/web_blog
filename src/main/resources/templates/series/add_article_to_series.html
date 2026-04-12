@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thêm bài viết vào series - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container-modal {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(47, 143, 106, 0.15);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2f8f6a 0%, #1e5e4a 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .header p {
+      margin: 10px 0 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .article-info {
+      background: #f0fdf4;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #2f8f6a;
+      margin-bottom: 30px;
+    }
+
+    .article-info h3 {
+      margin: 0 0 10px 0;
+      color: #1f2937;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .article-info p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .series-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .series-item {
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .series-item:hover {
+      border-color: #2f8f6a;
+      background: #f0fdf4;
+    }
+
+    .series-item input[type="radio"] {
+      margin-right: 12px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .series-item label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .series-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .series-title {
+      font-weight: 700;
+      color: #1f2937;
+      font-size: 15px;
+    }
+
+    .series-category {
+      display: inline-block;
+      background: #e0f2f1;
+      color: #2f8f6a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .series-description {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-submit {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #2f8f6a 0%, #1e5e4a 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(47, 143, 106, 0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(47, 143, 106, 0.4);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-cancel {
+      padding: 14px 40px;
+      background: white;
+      color: #2f8f6a;
+      border: 2px solid #2f8f6a;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-cancel:hover {
+      background: #2f8f6a;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(47, 143, 106, 0.2);
+    }
+
+    .btn-cancel:active {
+      transform: translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    .create-series-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #2f8f6a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .create-series-link:hover {
+      background: #1e5e4a;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <a th:href="@{/articles/{id}(id=${article.id})}" class="back-link" style="color:#fff;">← Quay lại bài viết</a>
+    </div>
+  </header>
+
+  <div class="container-modal">
+    <div class="header">
+      <h1>Thêm vào Series</h1>
+      <p>Chọn series để thêm bài viết này vào</p>
+    </div>
+
+    <div class="content">
+      <div class="article-info">
+        <h3 th:text="${article.title}"></h3>
+        <p>Chọn một series từ danh sách dưới đây để thêm bài viết này vào</p>
+      </div>
+
+      <div th:if="${!seriesList.isEmpty()}">
+        <form th:action="@{/series/add-to-series}" method="post">
+          <input type="hidden" name="articleId" th:value="${article.id}">
+
+          <div class="series-list">
+            <div th:each="series : ${seriesList}" class="series-item">
+              <label>
+                <input type="radio" name="seriesId" th:value="${series.id}" required>
+                <div class="series-details">
+                  <div class="series-title" th:text="${series.title}"></div>
+                  <div th:if="${series.category}">
+                    <span class="series-category" th:text="${series.category}"></span>
+                  </div>
+                  <div th:if="${series.description}" class="series-description" th:text="${series.description}"></div>
+                  <div style="color:#9ca3af;font-size:12px;margin-top:6px;">
+                    <span th:text="${series.articles != null ? series.articles.size() : 0}"></span> bài viết
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn-submit">Thêm vào Series</button>
+            <a th:href="@{/articles/{id}(id=${article.id})}" class="btn-cancel">Hủy</a>
+          </div>
+        </form>
+      </div>
+
+      <div th:if="${seriesList.isEmpty()}" class="empty-state">
+        <p style="font-size: 48px;">📭</p>
+        <p><strong>Bạn chưa có series nào</strong></p>
+        <p>Hãy tạo series mới để tổ chức các bài viết của mình</p>
+        <a th:href="@{/series/create}" class="create-series-link">Tạo Series Mới</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

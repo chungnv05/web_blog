@@ -31,7 +31,6 @@ public class ArticlesController {
         this.topicService = topicService;
         this.seriesService = seriesService;
         this.reportService = reportService;
-
     }
 
 
@@ -180,7 +179,6 @@ public class ArticlesController {
         return "redirect:/articles/" + id;
     }
 
-
     // Báo cáo bài viết
     @PostMapping("/{id}/report")
     public String reportArticle(@PathVariable Long id,
@@ -222,6 +220,73 @@ public class ArticlesController {
 
         // Quay lại trang chi tiết bài viết
         return "redirect:/articles/" + id;
+    }
+
+    @GetMapping("/add-article")
+    public String showAddArticleForm(@RequestParam Long articleId,
+                                     HttpSession session,
+                                     Model model) {
+        // Kiểm tra xem người dùng đã đăng nhập chưa
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Lấy bài viết từ DB
+        Article article = articleService.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        // Kiểm tra xem user có quyền add article vào series không (chỉ chủ sở hữu bài viết)
+        if (!article.getAuthor().getId().equals(currentUser.getId())) {
+            return "redirect:/articles/" + articleId;
+        }
+
+        // Lấy tất cả series của user
+        List<Series> seriesList = seriesService.getAllByUser(currentUser.getId());
+
+        model.addAttribute("article", article);
+        model.addAttribute("seriesList", seriesList);
+
+        // render file templates/series/add_article_to_series.html
+        return "articles/add_article_to_series";
+    }
+
+    @PostMapping("/add-to-series")
+    public String addArticleToSeries(@RequestParam Long articleId,
+                                     @RequestParam Long seriesId,
+                                     HttpSession session) {
+        // Kiểm tra xem người dùng đã đăng nhập chưa
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        // Lấy bài viết từ DB
+        Article article = articleService.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        // Kiểm tra xem user có quyền add article vào series không
+        if (!article.getAuthor().getId().equals(currentUser.getId())) {
+            return "redirect:/articles/" + articleId;
+        }
+
+        // Lấy series từ DB
+        Series series = seriesService.findById(seriesId)
+                .orElseThrow(() -> new RuntimeException("Series not found"));
+
+        // Kiểm tra xem user có quyền add vào series này không
+        if (!series.getOwner().getId().equals(currentUser.getId())) {
+            return "redirect:/articles/" + articleId;
+        }
+
+        // Thêm bài viết vào series
+        if (!series.getArticles().contains(article)) {
+            series.getArticles().add(article);
+            seriesService.save(series);
+        }
+
+        // Quay lại trang chi tiết bài viết
+        return "redirect:/articles/" + articleId;
     }
 
 }

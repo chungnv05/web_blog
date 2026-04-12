@@ -10,11 +10,14 @@
   <header>
     <div class="header-container">
       <div class="logo">📖 Blog</div>
-      <form method="get" th:action="@{/}" class="header-nav">
-        <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
-        <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
-        <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
-      </form>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <a th:href="@{/series/explore}" class="secondary" style="text-decoration:none;padding:10px 16px;border-radius:8px;transition:all 0.3s;display:inline-block;text-align:center;">📚 Series</a>
+        <form method="get" th:action="@{/}" class="header-nav" style="margin:0;padding:0;display:flex;gap:8px;">
+          <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
+          <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
+          <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
+        </form>
+      </div>
     </div>
   </header>
 

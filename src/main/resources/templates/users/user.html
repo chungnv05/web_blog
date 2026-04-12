@@ -83,6 +83,24 @@
        </a>
      </div>
 
+     <div th:if="${isOwner}" style="margin-top:24px;">
+       <a th:href="@{/series/create}"
+          style="display:inline-block;padding:12px 24px;background:#2f8f6a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.3s;"
+          onmouseover="this.style.background='#1e5e4a'"
+          onmouseout="this.style.background='#2f8f6a'">
+         Tạo series mới
+       </a>
+     </div>
+
+      <div th:if="${isOwner}" style="margin-top:24px;">
+        <a th:href="@{/series/list}"
+           style="display:inline-block;padding:12px 24px;background:#2f8f6a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.3s;"
+           onmouseover="this.style.background='#1e5e4a'"
+           onmouseout="this.style.background='#2f8f6a'">
+          Quản lý series
+        </a>
+      </div>
+
     </main>
   </div>
 </body>

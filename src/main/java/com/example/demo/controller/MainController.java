@@ -181,7 +181,7 @@ public class MainController {
         return "users/users_list"; // render file users/users_list.html
     }
 
-    // ✅ Chi tiết user
+    // Chi tiết user
     @GetMapping("/users/{id}")
     public String userDetail(@PathVariable Long id,
                            HttpSession session,
@@ -190,17 +190,23 @@ public class MainController {
 
         // Kiểm tra xem có phải admin không
         boolean isAdmin = false;
+        boolean isOwner = false;
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
             isAdmin = true;
         }
+        // Kiểm tra xem có phải chủ sở hữu hồ sơ không
+        if (currentUser != null && currentUser.getId().equals(user.getId())) {
+            isOwner = true;
+        }
 
         model.addAttribute("user", user);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isOwner", isOwner);
         return "users/user";
     }
 
-    // 👤 Trang cá nhân (lấy từ session)
+    // Trang cá nhân (lấy từ session)
     @GetMapping("/user")
     public String userPage(HttpSession session, Model model) {
         User sessionUser = (User) session.getAttribute("currentUser");
@@ -220,8 +226,11 @@ public class MainController {
                                .orElseThrow(() -> new RuntimeException("User not found"));
 
         model.addAttribute("user", user);
+        model.addAttribute("isOwner", true);
+        model.addAttribute("isAdmin", sessionUser.getRole() == Role.ADMIN);
         return "users/user";
     }
+
 
 
     

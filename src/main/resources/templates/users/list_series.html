@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Series - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Các CSS của header bạn để trong styles.css sẽ vẫn hoạt động bình thường */
+
+    .container-series {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* --- HERO SECTION --- */
+    .header-section {
+      background: linear-gradient(135deg, #2f8f6a 0%, #1e5e4a 100%);
+      color: white;
+      padding: 48px 30px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(47, 143, 106, 0.2);
+    }
+
+    .header-section h1 {
+      margin: 0 0 12px 0;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .header-section p {
+      margin: 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .btn-primary, .btn-back {
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #2f8f6a;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: white;
+      transform: translateY(-2px);
+    }
+
+    /* --- SERIES GRID & CARDS --- */
+    .series-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .series-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      border-left: 4px solid #2f8f6a;
+      display: flex;
+      flex-direction: row; /* Dàn ngang trên Desktop */
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      transition: all 0.3s ease;
+    }
+
+    .series-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(47, 143, 106, 0.12);
+    }
+
+    .card-content-wrapper {
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .series-category {
+      display: inline-block;
+      background: #e0f2f1;
+      color: #2f8f6a;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: fit-content;
+    }
+
+    .series-card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #1f2937;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .series-description {
+      display: none; /* Giữ nguyên ẩn như code cũ của bạn */
+    }
+
+    .series-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .series-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .series-stat-item strong {
+      color: #2f8f6a;
+      font-weight: 700;
+    }
+
+    /* --- ACTION BUTTONS IN CARD --- */
+    .series-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: 20px;
+    }
+
+    .series-actions form {
+      margin: 0;
+    }
+
+    .btn-edit, .btn-delete {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-edit {
+      background: #e0f2f1;
+      color: #2f8f6a;
+    }
+
+    .btn-edit:hover {
+      background: #2f8f6a;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    .btn-delete:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* --- EMPTY STATE --- */
+    .empty-state {
+      background: white;
+      padding: 60px 40px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      border: 1px dashed #cbd5e1;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      color: #6b7280;
+      margin: 16px 0 24px 0;
+    }
+
+    .empty-state .btn-primary {
+      background: #2f8f6a;
+      color: white;
+    }
+
+    .empty-state .btn-primary:hover {
+      background: #1e5e4a;
+    }
+
+    /* --- RESPONSIVE MOBILE --- */
+    @media (max-width: 640px) {
+      .header-section {
+        padding: 30px 20px;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+      .series-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+      }
+      .series-actions {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f3f4f6;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <div class="logo">📖 Blog</div>
+    <a th:href="@{/user}" class="back-link" style="color:#fff;">← Quay lại hồ sơ</a>
+  </div>
+</header>
+
+<div class="container-series">
+  <div class="header-section">
+    <h1>Quản lý series của bạn</h1>
+    <p>Tổ chức và quản lý các series bài viết của mình</p>
+    <div class="action-buttons">
+      <a th:href="@{/series/create}" class="btn-primary">Tạo series mới</a>
+      <a th:href="@{/user}" class="btn-back">Quay Lại</a>
+    </div>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(seriesList)}" class="series-grid">
+    <div th:each="series : ${seriesList}" class="series-card">
+
+      <a th:href="@{/series/{id}(id=${series.id})}" class="card-content-wrapper">
+        <div th:if="${series.category}">
+          <span class="series-category" th:text="${series.category}"></span>
+        </div>
+        <h3 th:text="${series.title}"></h3>
+
+        <div th:if="${series.description}" class="series-description" th:text="${series.description}"></div>
+
+        <div class="series-stats">
+          <div class="series-stat-item">
+            <span>📚</span>
+            <span>Bài viết: <strong th:text="${series.articles != null ? series.articles.size() : 0}"></strong></span>
+          </div>
+        </div>
+      </a>
+
+      <div class="series-actions">
+        <a th:href="@{/series/{id}/edit(id=${series.id})}" class="btn-edit">Chỉnh sửa</a>
+        <form th:action="@{/series/{id}/delete(id=${series.id})}" method="post">
+          <button type="submit" class="btn-delete" onclick="return confirm('Bạn chắc chắn muốn xóa series này?')">Xóa</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div th:if="${#lists.isEmpty(seriesList)}" class="empty-state">
+    <p style="font-size: 56px; margin: 0;">📭</p>
+    <h2 style="color: #1f2937; margin-top: 16px;">Bạn chưa có series nào</h2>
+    <p>Bắt đầu tạo series đầu tiên của bạn để tổ chức các bài viết theo chủ đề.</p>
+    <a th:href="@{/series/create}" class="btn-primary">Tạo Series Mới</a>
+  </div>
+</div>
+</body>
+</html>

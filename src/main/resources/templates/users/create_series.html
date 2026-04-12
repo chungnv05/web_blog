@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo Series Mới - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <style>
+    .form-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2f8f6a;
+      box-shadow: 0 0 0 3px rgba(47, 143, 106, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .btn-submit {
+      padding: 12px 30px;
+      background: #2f8f6a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+      background: #1e5e4a;
+    }
+
+    .btn-cancel {
+      padding: 12px 30px;
+      background: #e5e7eb;
+      color: #374151;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1f2937;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: white !important;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2f8f6a, #3ba17a);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .header p {
+      margin: 10px 0 0 0;
+      color: white;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <a th:href="@{/user}" class="back-link" style="color:#fff;">← Quay lại hồ sơ</a>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <div class="header">
+      <h1>Tạo Series Mới</h1>
+    </div>
+
+    <form th:action="@{/series/save}" th:object="${series}" method="post">
+      <div class="form-group">
+        <label for="title">Tiêu đề Series</label>
+        <input type="text" id="title" th:field="*{title}" placeholder="Nhập tiêu đề series..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Mô tả</label>
+        <textarea id="description" th:field="*{description}" placeholder="Mô tả về series này..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Danh mục</label>
+        <input type="text" id="category" th:field="*{category}" placeholder="VD: Công nghệ, Văn học...">
+      </div>
+
+      <div class="button-group">
+        <button type="submit" class="btn-submit">Tạo Series</button>
+        <a th:href="@{/user}" class="btn-cancel">Hủy</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

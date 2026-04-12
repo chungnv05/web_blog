@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${series.title} + ' - Series - Blog'">Chi tiết Series - Blog</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+      min-height: 100vh;
+    }
+
+    .container-detail {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .series-header {
+      background: linear-gradient(135deg, #2f8f6a 0%, #1e5e4a 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(47, 143, 106, 0.2);
+    }
+
+    .series-header h1 {
+      margin: 0 0 15px 0;
+      font-size: 36px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .series-header p {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    .series-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .series-category-header {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .articles-section {
+      margin-bottom: 40px;
+    }
+
+    .articles-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .article-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .article-item {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #2f8f6a;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .article-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 8px 25px rgba(47, 143, 106, 0.15);
+    }
+
+    .article-item h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #1f2937;
+      font-weight: 700;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .article-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .empty-state {
+      background: white;
+      padding: 60px 40px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-state p {
+      font-size: 18px;
+      color: #6b7280;
+      margin: 15px 0;
+    }
+
+    .back-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: white;
+      color: #2f8f6a;
+      border: 2px solid #2f8f6a;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+    }
+
+    .back-btn:hover {
+      background: #2f8f6a;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">📖 Blog</div>
+      <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
+    </div>
+  </header>
+
+  <div class="container-detail">
+    <a th:href="@{/series/list}" class="back-btn">← Quay lại danh sách series</a>
+
+    <div class="series-header">
+      <h1 th:text="${series.title}"></h1>
+      <p th:if="${series.description}" th:text="${series.description}"></p>
+
+      <div class="series-meta">
+        <div th:if="${series.category}" class="meta-item">
+          <span class="series-category-header" th:text="${series.category}"></span>
+        </div>
+        <div class="meta-item">
+          <span>📚 <strong th:text="${articles.size()}"></strong> bài viết</span>
+        </div>
+        <div class="meta-item">
+          <span>✍️ Tác giả: <strong th:text="${series.owner.name}"></strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="articles-section">
+      <h2 class="articles-title">📄 Các bài viết trong series</h2>
+
+      <div th:if="${!articles.isEmpty()}" class="article-list">
+        <a th:each="article : ${articles}"
+           th:href="@{/articles/{id}(id=${article.id})}"
+           class="article-item">
+          <h3 th:text="${article.title}"></h3>
+          <div class="article-meta">
+            <span>Tác giả: <strong th:text="${article.author.name}"></strong></span>
+            <span>Ngày đăng: <strong th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></strong></span>
+            <span>❤️ <strong th:text="${article.likes.size()}"></strong> thích</span>
+            <span>💬 <strong th:text="${article.comments.size()}"></strong> bình luận</span>
+          </div>
+        </a>
+      </div>
+
+      <div th:if="${articles.isEmpty()}" class="empty-state">
+        <p style="font-size: 48px;">📭</p>
+        <p><strong>Series này chưa có bài viết nào</strong></p>
+        <p>Hãy thêm bài viết để bắt đầu xây dựng series này</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

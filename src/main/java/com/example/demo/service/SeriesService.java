@@ -16,6 +16,10 @@ public class SeriesService {
         this.seriesRepository = seriesRepository;
     }
 
+    public List<Series> findAll() {
+        return seriesRepository.findAll();
+    }
+
     public List<Series> getAllByUser(Long userId) {
         return seriesRepository.findByOwnerId(userId);
     }
@@ -26,6 +30,10 @@ public class SeriesService {
 
     public Series save(Series series) {
         return seriesRepository.save(series);
+    }
+
+    public void deleteById(Long id) {
+        seriesRepository.deleteById(id);
     }
 
 }
