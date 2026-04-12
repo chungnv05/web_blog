@@ -26,8 +26,8 @@
 <body>
 <header>
     <div class="header-container">
-        <div class="logo">📖 Hoạt động</div>
-        <a th:href="@{/}" class="back-link" style="color:#fff;background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);padding:10px 16px;border-radius:12px;font-weight:600;text-decoration:none;">← Trang chủ</a>
+        <div class="logo">📖 Blog</div>
+        <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
     </div>
 </header>
 
@@ -74,7 +74,7 @@
                 <thead>
                 <tr>
                     <th width="10%">#</th>
-                    <th width="50%">🧠 Tên bài viết chứa quiz</th>
+                    <th width="50%">🧠 Bài viết chứa quiz</th>
                     <th width="20%">🏆 Điểm số</th>
                     <th width="20%">📅 Ngày làm</th>
                 </tr>
@@ -82,8 +82,9 @@
                 <tbody>
                 <tr th:each="q, iterStat : ${quizHistoryList}">
                     <td th:text="${iterStat.count}"></td>
-                    <td th:text="${q.quiz.article.title}" style="font-weight: 600;"></td>
                     <td>
+                        <a th:href="@{/articles/{id}(id=${q.quiz.article.id})}" th:text="${q.quiz.article.title}"></a>
+                    </td><td>
                         <span class="score-badge" th:text="${q.score + '/' + q.totalQuestions}"></span>
                     </td>
                     <td><small th:text="${#temporals.format(q.completedAt, 'dd/MM/yyyy HH:mm')}"></small></td>

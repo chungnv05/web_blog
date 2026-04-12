@@ -47,6 +47,26 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 600px) { .quiz-option { flex: 0 0 100%; } }
+        /* Style cho thông báo chưa đăng nhập */
+        .auth-warning {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fffbeb; /* Vàng nhạt */
+            border: 1px solid #fde68a; /* Vàng viền */
+            border-radius: 8px;
+            color: #92400e; /* Chữ nâu vàng */
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-warning a {
+            color: var(--secondary);
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 
     <h2 style="color: var(--primary-dark); margin-bottom: 20px;">🧠 Thử thách kiến thức</h2>
@@ -76,6 +96,9 @@
         <div class="score-circle" id="finalScoreDisplay">0/0</div>
         <h3 id="rankTitle">Kết quả</h3>
         <p id="rankMessage"></p>
+        <div th:if="${!isAuthenticated}" class="auth-warning">
+            ⚠️ <span>Vui lòng <a th:href="@{/login}">đăng nhập</a> để lưu kết quả vào lịch sử.</span>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

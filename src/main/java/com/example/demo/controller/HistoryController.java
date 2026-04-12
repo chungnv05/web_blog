@@ -28,10 +28,15 @@ public class HistoryController {
 
         List<ReadingHistory> historyList = readingHistoryService.findByUserOrderByViewedAtDesc(user);
         List<QuizHistory> quizHistoryList = quizHistoryService.findByUserOrderByCompletedAtDesc(user);
+        boolean isAuthenticated = false;
 
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser != null) {
+            isAuthenticated = true;
+        }
         model.addAttribute("historyList", historyList);
         model.addAttribute("quizHistoryList", quizHistoryList);
-
+        model.addAttribute("isAuthenticated", isAuthenticated);
         return "users/history";
     }
 }
