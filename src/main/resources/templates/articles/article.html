@@ -10,7 +10,13 @@
   <header>
     <div class="header-container">
       <div class="logo">📖 Blog</div>
-      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+      <div style="display: flex; gap: 15px; align-items: center;">
+          <a th:if="${isAuthenticated}" th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 5px 10px; font-size: 14px;">
+              🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 1px 5px; font-size: 9px; position: absolute; top: -5px; right: -5px;"></span>
+              Thông báo
+          </a>
+          <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+      </div>
     </div>
   </header>
 
@@ -19,7 +25,7 @@
       <div class="article-header">
         <h1 th:text="${article.title}"></h1>
         <div class="article-meta" style="color:#64748b;display:flex;gap:12px;flex-wrap:wrap;">
-          <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
+          <span>✍️ Tác giả: <a th:href="@{/users/{id}(id=${article.author.id})}" style="text-decoration: none; color: inherit;"><strong th:text="${article.author.name}"></strong></a></span>
           <span>📅 Ngày đăng: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
           <span>📚 Chủ đề: <span th:text="${article.topics.size()}"></span></span>
         </div>
@@ -92,7 +98,9 @@
 
         <div class="sidebar-item">
           <label>✍️ Tác giả</label>
-          <span th:text="${article.author.name}"></span>
+          <a th:href="@{/users/{id}(id=${article.author.id})}" style="text-decoration: none; color: #2563eb; font-weight: 600;">
+            <span th:text="${article.author.name}"></span>
+          </a>
         </div>
 
         <div class="sidebar-item">

@@ -173,12 +173,47 @@ public class MainController {
         return "users/users_list"; // render file users/users_list.html
     }
 
-    // ✅ Chi tiết user
+    //  Chi tiết user
     @GetMapping("/users/{id}")
-    public String userDetail(@PathVariable Long id, Model model) {
+    public String userDetail(@PathVariable Long id, HttpSession session, Model model) {
         User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        User currentUser = (User) session.getAttribute("currentUser");
+        boolean isFollowing = false;
+        boolean isSelf = false;
+
+        if (currentUser != null) {
+            isFollowing = userService.isFollowing(currentUser.getId(), id);
+            isSelf = currentUser.getId().equals(id);
+        }
+
         model.addAttribute("user", user);
+        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("isFollowing", isFollowing);
+        model.addAttribute("followerCount", user.getFollowers().size());
+        model.addAttribute("followingCount", user.getFollowing().size());
+        
         return "users/user";
+    }
+
+    // Follow user
+    @PostMapping("/users/{id}/follow")
+    public String followUser(@PathVariable Long id, HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) return "redirect:/login";
+        
+        userService.follow(currentUser.getId(), id);
+        return "redirect:/users/" + id;
+    }
+
+    // Unfollow user
+    @PostMapping("/users/{id}/unfollow")
+    public String unfollowUser(@PathVariable Long id, HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) return "redirect:/login";
+        
+        userService.unfollow(currentUser.getId(), id);
+        return "redirect:/users/" + id;
     }
 
     // 👤 Trang cá nhân (lấy từ session)
@@ -189,18 +224,16 @@ public class MainController {
             return "redirect:/login";
         }
         
-        /*
-        // Nếu articles chưa được nạp, khởi tạo rỗng
-        if (user.getArticles() == null) {
-            user.setArticles(new ArrayList<>());
-        }
-        */
-        
-        // Nạp lại từ DB để có đầy đủ quan hệ articles
+        // Nạp lại từ DB để có đầy đủ quan hệ articles và follows
         User user = userService.findById(sessionUser.getId())
                                .orElseThrow(() -> new RuntimeException("User not found"));
 
         model.addAttribute("user", user);
+        model.addAttribute("isSelf", true);
+        model.addAttribute("isFollowing", false);
+        model.addAttribute("followerCount", user.getFollowers().size());
+        model.addAttribute("followingCount", user.getFollowing().size());
+        
         return "users/user";
     }
 

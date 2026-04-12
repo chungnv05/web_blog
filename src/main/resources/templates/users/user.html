@@ -10,7 +10,13 @@
   <header>
     <div class="header-container">
       <div class="logo">Blog</div>
-      <a th:href="@{/}" class="back-link">Trang chu</a>
+      <div style="display: flex; gap: 15px; align-items: center;">
+          <a th:if="${session.currentUser != null}" th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 5px 10px; font-size: 14px;">
+              🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 1px 5px; font-size: 9px; position: absolute; top: -5px; right: -5px;"></span>
+              Thông báo
+          </a>
+          <a th:href="@{/}" class="back-link">Trang chủ</a>
+      </div>
     </div>
   </header>
 
@@ -42,6 +48,22 @@
 
       <div class="mark-badge">
         Diem: <span th:text="${user.mark}"></span>
+      </div>
+
+      <!-- Thống kê Follow -->
+      <div class="follow-stats" style="margin: 15px 0; display: flex; gap: 15px; font-size: 0.9em; color: #555;">
+        <span><strong><span th:text="${followerCount != null ? followerCount : user.followers.size()}">0</span></strong> Người theo dõi</span>
+        <span><strong><span th:text="${followingCount != null ? followingCount : user.following.size()}">0</span></strong> Đang theo dõi</span>
+      </div>
+
+      <!-- Nút Follow/Unfollow -->
+      <div th:if="${session.currentUser != null and !isSelf}" style="margin-bottom: 20px;">
+          <form th:if="${!isFollowing}" th:action="@{/users/{id}/follow(id=${user.id})}" method="post">
+              <button type="submit" class="follow-btn" style="width: 100%; padding: 10px; background-color: #2f8f6a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Theo dõi</button>
+          </form>
+          <form th:if="${isFollowing}" th:action="@{/users/{id}/unfollow(id=${user.id})}" method="post">
+              <button type="submit" class="unfollow-btn" style="width: 100%; padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Hủy theo dõi</button>
+          </form>
       </div>
 
       <a th:href="@{/}" class="back-btn">Quay lai</a>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 Thông báo - 📖 Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        .notification-item.unread {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+        }
+        .notification-content {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+        .notification-message {
+            margin-bottom: 5px;
+            color: #1e293b;
+        }
+        .notification-time {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .mark-read-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .mark-read-btn:hover {
+            background: #cbd5e1;
+        }
+        .notification-actions {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">📖 Blog</div>
+        <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+    </div>
+</header>
+
+<div class="container">
+    <h1>🔔 Thông báo của bạn</h1>
+
+    <div class="notification-actions" th:if="${!notifications.empty}">
+        <form th:action="@{/notifications/read-all}" method="post">
+            <button type="submit" class="btn secondary">Đánh dấu tất cả đã đọc</button>
+        </form>
+    </div>
+
+    <div class="notifications-list card">
+        <div th:if="${notifications.empty}" class="empty-state">
+            <p>📭 Bạn chưa có thông báo nào.</p>
+        </div>
+
+        <div th:each="notif : ${notifications}" class="notification-item" th:classappend="${!notif.isRead} ? 'unread' : ''">
+            <div class="notification-content">
+                <div class="notification-message">
+                    <a th:if="${notif.article != null}" th:href="@{/articles/{id}(id=${notif.article.id})}" th:text="${notif.message}" style="text-decoration: none; color: inherit;"></a>
+                    <span th:if="${notif.article == null}" th:text="${notif.message}"></span>
+                </div>
+                <div class="notification-time" th:text="${#temporals.format(notif.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
+            </div>
+            <div class="notification-action" th:if="${!notif.isRead}">
+                <form th:action="@{/notifications/{id}/read(id=${notif.id})}" method="post">
+                    <button type="submit" class="mark-read-btn">Đánh dấu đã đọc</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

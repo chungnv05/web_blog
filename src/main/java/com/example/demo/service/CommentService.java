@@ -11,9 +11,11 @@ import java.util.Optional;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, NotificationService notificationService) {
         this.commentRepository = commentRepository;
+        this.notificationService = notificationService;
     }
 
     // Lấy tất cả comment
@@ -26,9 +28,17 @@ public class CommentService {
         return commentRepository.findById(id);
     }
 
-    // Lưu comment
+    // Lưu comment và tạo thông báo
     public Comment save(Comment comment) {
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        notificationService.createNotification(
+            comment.getArticle().getAuthor(),
+            comment.getAuthor(),
+            comment.getArticle(),
+            "COMMENT",
+            comment.getAuthor().getName() + " đã bình luận về bài viết của bạn: " + comment.getArticle().getTitle()
+        );
+        return savedComment;
     }
 
     // Xóa comment theo ID

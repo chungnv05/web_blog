@@ -11,6 +11,10 @@
     <div class="header-container">
       <div class="logo">📖 Blog</div>
       <form method="get" th:action="@{/}" class="header-nav">
+        <a th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 10px 15px;">
+          🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: 0; right: 0;"></span>
+          Thông báo
+        </a>
         <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
         <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
         <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
@@ -51,7 +55,7 @@
 
     <div class="pagination">
       <a th:if="${pageObj.hasPrevious()}" th:href="@{/(page=${pageObj.number-1})}">← Trang trước</a>
-      <span>Trang <span th:text="${pageObj.number}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
+      <span>Trang <span th:text="${pageObj.number + 1}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
       <a th:if="${pageObj.hasNext()}" th:href="@{/(page=${pageObj.number+1})}">Trang sau →</a>
     </div>
   </div>

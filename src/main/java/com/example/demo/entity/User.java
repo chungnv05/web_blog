@@ -8,15 +8,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-
 
 @Entity
 @Table(name = "users")
@@ -28,37 +23,36 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
     
-    private String password;   // thêm trường password để login
+    private String password;
     private String name;
     private String email;
     private String gender;
     private LocalDate birth;
     private int mark;
     
-    @Transient // không lưu vào DB
+    @Transient
     private String confirmPassword;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles = new ArrayList<>();
+
+    // Hệ thống Follow
+    @ManyToMany
+    @JoinTable(
+        name = "user_follows",
+        joinColumns = @JoinColumn(name = "follower_id"),
+        inverseJoinColumns = @JoinColumn(name = "following_id")
+    )
+    private Set<User> following = new HashSet<>();
+
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
     
-    // cấu hình admin để phân quyền
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-    public Role getRole() {
-        return role;
-    }
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
-    // Constructor mặc định
     public User() {}
 
-    // Constructor với tham số
     public User(String username, String password, String name, String email, String gender, LocalDate birth) {
         this.username = username;
         this.password = password;
@@ -69,7 +63,14 @@ public class User implements UserDetails {
         this.mark = 0;
     }
 
-    // Getter & Setter
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
     public Long getId() { return id; }
 
     @Override
@@ -97,14 +98,15 @@ public class User implements UserDetails {
 
     public List<Article> getArticles() { return articles; }
     public void setArticles(List<Article> articles) { this.articles = articles; }
-    
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
 
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
+    public Set<User> getFollowing() { return following; }
+    public void setFollowing(Set<User> following) { this.following = following; }
+
+    public Set<User> getFollowers() { return followers; }
+    public void setFollowers(Set<User> followers) { this.followers = followers; }
+    
+    public String getConfirmPassword() { return confirmPassword; }
+    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }
