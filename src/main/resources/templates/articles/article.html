@@ -36,7 +36,7 @@
       </div>
 
       <div class="article-body" th:utext="${article.content}"></div>
-
+      <div th:if="${article.quiz} != null" th:replace="articles/quiz :: quiz-display(${article.quiz})"></div>
       <div class="like-section">
         <div class="like-count">❤️ <strong th:text="${article.likes.size()}"></strong> người thích</div>
         <div th:if="${isAuthenticated}" style="display:flex;gap:10px;">

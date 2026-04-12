@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.*;
 import com.example.demo.service.*;
+import com.example.demo.service.history.ReadingHistoryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,25 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Controller
 public class ArticlesController {
 
+    private final ReadingHistoryService readingHistoryService;
     private ArticleService articleService;
     private UserService userService;
     private CommentService commentService;
     private LikeService likeService;
     private TopicService topicService;
 
-    public ArticlesController(ArticleService articleService, UserService userService, CommentService commentService, LikeService likeService, TopicService topicService) {
+    public ArticlesController(ArticleService articleService, UserService userService, CommentService commentService,
+                              LikeService likeService, TopicService topicService, ReadingHistoryService readingHistoryService) {
         this.articleService = articleService;
         this.userService = userService;
         this.commentService = commentService;
         this.likeService = likeService;
         this.topicService = topicService;
-
+        this.readingHistoryService = readingHistoryService;
     }
-
 
     // Hiển thị form tạo bài viết
     @GetMapping("/articles/new")
@@ -42,8 +43,8 @@ public class ArticlesController {
     // Xử lý submit form tạo bài viết
     @PostMapping("/articles")
     public String createArticle(@ModelAttribute("article") Article article,
-                                HttpSession session,
-                                @RequestParam(value = "topics", required = false) List<Long> topicIds) {
+            HttpSession session,
+            @RequestParam(value = "topics", required = false) List<Long> topicIds) {
         // Lấy user hiện tại từ session
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser == null) {
@@ -59,7 +60,17 @@ public class ArticlesController {
             List<Topic> selectedTopics = topicService.findByIds(topicIds);
             article.setTopics(selectedTopics);
         }
+        if (article.getQuiz() != null) {
+            Quiz quiz = article.getQuiz();
 
+            quiz.setArticle(article); 
+
+            if (quiz.getQuestions() != null) {
+                for (Question q : quiz.getQuestions()) {
+                    q.setQuiz(quiz); 
+                }
+            }
+        }
         // Lưu bài viết
         articleService.save(article);
 
@@ -69,8 +80,8 @@ public class ArticlesController {
     // 📝 Chi tiết bài viết
     @GetMapping("/articles/{id}")
     public String articleDetail(@PathVariable Long id,
-                                HttpSession session,
-                                Model model) {
+            HttpSession session,
+            Model model) {
         // Lấy bài viết
         Article article = articleService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
@@ -86,6 +97,7 @@ public class ArticlesController {
         if (currentUser != null) {
             isAuthenticated = true;
             userLikedArticle = likeService.existsByUserAndArticle(currentUser, article);
+            readingHistoryService.saveHistory(currentUser, article);
         }
 
         // Truyền dữ liệu cho template
@@ -100,8 +112,8 @@ public class ArticlesController {
     // 💬 Tạo comment
     @PostMapping("/articles/{id}/comments")
     public String createComment(@PathVariable Long id,
-                                @RequestParam("content") String content,
-                                HttpSession session) {
+            @RequestParam("content") String content,
+            HttpSession session) {
         // Lấy user hiện tại từ session
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser == null) {

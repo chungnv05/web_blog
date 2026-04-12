@@ -20,7 +20,8 @@ public class ReadingHistory {
     private Article article;
 
     private LocalDateTime viewedAt;
-
+    public ReadingHistory() {
+    }
     public ReadingHistory(User user, Article article, LocalDateTime viewedAt) {
         this.user = user;
         this.article = article;

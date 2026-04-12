@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>✏️ Tạo bài viết - Blog</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
+
 <body>
   <header>
     <div class="header-container">
@@ -35,6 +37,10 @@
         <script>
           CKEDITOR.replace('content');
         </script>
+        <button type="button" id = "quizBtn" onclick="toggleQuiz()" style="margin-bottom: 5px;">➕ Tạo Quiz</button>
+        <div id="quiz-section" style="display:none;">
+          <div th:replace="articles/quiz-create :: quiz-form"></div>
+        </div>
 
         <div class="form-group">
           <label>📚 Chủ đề</label>
@@ -46,7 +52,7 @@
           </div>
           <div th:if="${#fields.hasErrors('topics')}" class="error-message" th:errors="*{topics}"></div>
         </div>
-
+        
         <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
           <button type="submit">✓ Đăng bài</button>
           <a th:href="@{/}" class="cancel-btn">Hủy</a>
@@ -67,6 +73,27 @@
        <a th:href="@{/}" class="back-btn">← Quay lại trang chủ</a>
     </aside>
   </div>
+
+  <script>
+    function toggleQuiz(){
+      const el = document.getElementById("quiz-section");
+      const btn = document.getElementById("quizBtn");
+       if (el.style.display === "none") {
+        if(questionCount == 0){
+          addNewQuestion();
+        }
+        el.style.display = "block";
+        btn.innerText = "❌ Hủy tạo Quiz";
+        } else {
+          if(confirm("Bạn có chắc muốn hủy? Toàn bộ câu hỏi hiện tại sẽ bị xóa !")){
+            el.style.display = "none";
+            btn.innerText = "➕ Tạo Quiz";
+            clearQuizData();
+          }
+            
+        }
+    }
+  </script>
 </body>
 
 </html>

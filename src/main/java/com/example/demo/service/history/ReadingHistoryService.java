@@ -1,9 +1,9 @@
-package com.example.demo.service;
+package com.example.demo.service.history;
 
 import com.example.demo.entity.Article;
 import com.example.demo.entity.ReadingHistory;
 import com.example.demo.entity.User;
-import com.example.demo.repository.ReadingHistoryRepository;
+import com.example.demo.repository.history.ReadingHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

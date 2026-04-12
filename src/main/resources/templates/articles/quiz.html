@@ -68,13 +68,14 @@
             <div th:id="'res-' + ${question.id}" class="feedback"></div>
         </div>
         <button type="button" id="submitBtn" onclick="checkQuiz()" class="btn info">✔️ Tính điểm</button>
+        <button type="button" onclick="location.reload()" class="btn secondary" style="width: 180px;">🔄 Làm lại từ đầu</button>
+
     </form>
 
     <div id="scoreBoard">
         <div class="score-circle" id="finalScoreDisplay">0/0</div>
         <h3 id="rankTitle">Kết quả</h3>
         <p id="rankMessage"></p>
-<!--        <button type="button" onclick="location.reload()" class="btn secondary" style="width: 180px;">🔄 Làm lại bài</button>-->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -147,6 +148,20 @@
             }).then(() => {
                 board.scrollIntoView({ behavior: 'smooth' });
             });
+            saveQuizHistory(score, questions.length);
+        }
+        function saveQuizHistory(score, total) {
+            const quizId = [[${quiz.id}]];
+            const formData = new FormData();
+            formData.append('score', score);
+            formData.append('total', total);
+
+            fetch(`/quiz/${quizId}/submit`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.text())
+                .then(data => console.log("Server response:", data));
         }
     </script>
 </div>

@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.repository.history;
 
 import com.example.demo.entity.Article;
 import com.example.demo.entity.ReadingHistory;

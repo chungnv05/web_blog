@@ -173,7 +173,7 @@
                 <div id="question-list" class="sidebar-content">
                     <div class="question-item active" data-index="0" onclick="switchQuestion(0)">
                         <span class="q-number">Câu 1</span>
-                        <p class="q-title" id="preview-0">Câu hỏi chưa đặt tên...</p>
+                        <p class="q-title" id="preview-0"></p>
                     </div>
                 </div>
                 <div class="sidebar-footer">
@@ -187,7 +187,7 @@
                     <div class="question-block" id="block-0">
                         <div class="form-group">
                             <label>Nội dung câu hỏi</label>
-                            <textarea name="quiz.questions[0].questionText" onblur="updatePreview(0, this.value)"
+                            <textarea name="quiz.questions[0].questionText" oninput="updatePreview(0, this.value)"
                                 placeholder="Nhập nội dung câu hỏi..."></textarea>
                         </div>
 
@@ -228,7 +228,11 @@
         </div>
         <script>
             let questionCount = 1;
-
+            function updatePreview(index, value){
+                const preview = document.getElementById(`preview-${index}`);
+                if(!preview) return;
+                preview.textContent = value && value.trim() != "" ? value : ""
+            }
             function switchQuestion(index) {
                 document.querySelectorAll('.question-item').forEach(el => el.classList.remove('active'));
                 document.querySelector(`.question-item[data-index="${index}"]`).classList.add('active');
@@ -289,8 +293,6 @@
 
                 questionCount++;
                 switchQuestion(index);
-
-                // Tự động cuộn sidebar xuống dưới cùng
                 sideBarList.scrollTop = sideBarList.scrollHeight;
             }
             function clearQuizData(){

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕒 Nhật ký hoạt động - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Tab Styles */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+        .tab-btn {
+            padding: 10px 20px; border: none; background: none; cursor: pointer;
+            font-weight: 600; color: #64748b; border-bottom: 3px solid transparent; transition: 0.3s;
+        }
+        .tab-btn.active { color: var(--secondary); border-bottom-color: var(--secondary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+        .score-badge {
+            background: var(--primary-light); color: var(--primary-dark);
+            padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">📖 Hoạt động</div>
+        <a th:href="@{/}" class="back-link" style="color:#fff;background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);padding:10px 16px;border-radius:12px;font-weight:600;text-decoration:none;">← Trang chủ</a>
+    </div>
+</header>
+
+<div class="container">
+    <h1>Lịch sử hoạt động</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'reading')">📚 Bài viết đã đọc</button>
+        <button class="tab-btn" onclick="openTab(event, 'quiz')">🧠 Thử thách Quiz</button>
+    </div>
+
+    <div id="reading" class="tab-content active">
+        <div th:if="${#lists.isEmpty(historyList)}" class="empty-state">
+            <p>📭 Bạn chưa đọc bài viết nào</p>
+        </div>
+        <div th:if="${!#lists.isEmpty(historyList)}" class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th width="10%">#</th>
+                    <th width="60%">📝 Tiêu đề bài viết</th>
+                    <th width="30%">📅 Thời gian xem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, iterStat : ${historyList}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td>
+                        <a th:href="@{/articles/{id}(id=${item.article.id})}" th:text="${item.article.title}"></a>
+                    </td>
+                    <td><small th:text="${#temporals.format(item.viewedAt, 'dd/MM/yyyy HH:mm')}"></small></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="quiz" class="tab-content">
+        <div th:if="${#lists.isEmpty(quizHistoryList)}" class="empty-state">
+            <p>🎯 Bạn chưa thực hiện thử thách nào</p>
+        </div>
+        <div th:if="${!#lists.isEmpty(quizHistoryList)}" class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th width="10%">#</th>
+                    <th width="50%">🧠 Tên bài viết chứa quiz</th>
+                    <th width="20%">🏆 Điểm số</th>
+                    <th width="20%">📅 Ngày làm</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="q, iterStat : ${quizHistoryList}">
+                    <td th:text="${iterStat.count}"></td>
+                    <td th:text="${q.quiz.article.title}" style="font-weight: 600;"></td>
+                    <td>
+                        <span class="score-badge" th:text="${q.score + '/' + q.totalQuestions}"></span>
+                    </td>
+                    <td><small th:text="${#temporals.format(q.completedAt, 'dd/MM/yyyy HH:mm')}"></small></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+</body>
+</html>

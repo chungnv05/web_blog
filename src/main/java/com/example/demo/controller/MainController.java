@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.*;
 import com.example.demo.service.*;
+import com.example.demo.service.history.ReadingHistoryService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -23,13 +23,15 @@ public class MainController {
     private final UserService userService;
     private final TopicService topicService;
     private final PasswordEncoder passwordEncoder;
+    private final ReadingHistoryService readingHistoryService;
 
     public MainController(ArticleService articleService, UserService userService,
                           TopicService topicService, CommentService commentService,
-                          LikeService likeService, PasswordEncoder passwordEncoder) {
+                          LikeService likeService, ReadingHistoryService readingHistoryService, PasswordEncoder passwordEncoder) {
         this.articleService = articleService;
         this.userService = userService;
         this.topicService = topicService;
+        this.readingHistoryService = readingHistoryService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -152,7 +154,8 @@ public class MainController {
 
             case "BXH":
                 return "redirect:/users/rank";
-
+            case "history":
+                return "redirect:/history";
             default:
                 Page<Article> defaultPage = articleService.findAll(PageRequest.of(page, 10));
                 model.addAttribute("posts", defaultPage.getContent());
@@ -254,6 +257,8 @@ public class MainController {
 
         return "filter";
     }
+
+
 }
 
 
