@@ -10,15 +10,27 @@
   <header>
     <div class="header-container">
       <div class="logo">📖 Blog</div>
-      <form method="get" th:action="@{/}" class="header-nav">
-        <a th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 10px 15px;">
-          🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: 0; right: 0;"></span>
-          Thông báo
-        </a>
-        <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
-        <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
-        <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
-      </form>
+      <div class="header-nav">
+        <!-- Khi đã đăng nhập -->
+        <th:block th:if="${session.currentUser != null}">
+          <a th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 10px 15px;">
+            🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: 0; right: 0;"></span>
+            Thông báo
+          </a>
+          <form method="get" th:action="@{/}" style="display:inline;">
+            <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
+            <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
+            <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
+          </form>
+        </th:block>
+
+        <!-- Khi chưa đăng nhập -->
+        <th:block th:if="${session.currentUser == null}">
+          <a th:href="@{/users/rank}" class="btn info" style="text-decoration: none;">🏆 Xếp hạng</a>
+          <a th:href="@{/login}" class="btn secondary" style="text-decoration: none;">🔑 Đăng nhập</a>
+          <a th:href="@{/register}" class="btn warn" style="text-decoration: none;">📝 Đăng ký</a>
+        </th:block>
+      </div>
     </div>
   </header>
 

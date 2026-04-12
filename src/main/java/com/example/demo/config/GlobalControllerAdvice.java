@@ -22,6 +22,8 @@ public class GlobalControllerAdvice {
         if (currentUser != null) {
             long unreadCount = notificationService.countUnreadNotifications(currentUser);
             model.addAttribute("unreadNotificationsCount", unreadCount);
+        } else {
+            model.addAttribute("unreadNotificationsCount", 0L);
         }
     }
 }
