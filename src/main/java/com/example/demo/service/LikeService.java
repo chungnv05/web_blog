@@ -62,12 +62,12 @@ public class LikeService {
         return likeRepository.findByUserAndArticle(user, article);
     }
 
-    // ✅ Kiểm tra user đã like bài viết chưa
+    // Kiểm tra user đã like bài viết chưa
     public boolean existsByUserAndArticle(User user, Article article) {
         return likeRepository.existsByUserAndArticle(user, article);
     }
 
-    // ✅ Toggle like: nếu đã like thì xóa, chưa like thì thêm
+    //  Toggle like: nếu đã like thì xóa, chưa like thì thêm
     public void toggleLike(User user, Article article) {
         Like like = likeRepository.findByUserAndArticle(user, article);
         if (like != null) {

@@ -55,32 +55,6 @@ public class UserService {
         return follower.getFollowing().stream().anyMatch(u -> u.getId().equals(followingId));
     }
 
-    @Transactional
-    public void follow(Long followerId, Long followingId) {
-        if (followerId.equals(followingId)) return;
-        
-        User follower = userRepository.findById(followerId).orElseThrow(() -> new RuntimeException("Follower not found"));
-        User following = userRepository.findById(followingId).orElseThrow(() -> new RuntimeException("User to follow not found"));
-        
-        follower.getFollowing().add(following);
-        userRepository.save(follower);
-    }
-
-    @Transactional
-    public void unfollow(Long followerId, Long followingId) {
-        User follower = userRepository.findById(followerId).orElseThrow(() -> new RuntimeException("Follower not found"));
-        User following = userRepository.findById(followingId).orElseThrow(() -> new RuntimeException("User to unfollow not found"));
-        
-        follower.getFollowing().remove(following);
-        userRepository.save(follower);
-    }
-
-    public boolean isFollowing(Long followerId, Long followingId) {
-        User follower = userRepository.findById(followerId).orElse(null);
-        if (follower == null) return false;
-        return follower.getFollowing().stream().anyMatch(u -> u.getId().equals(followingId));
-    }
-
     // Lấy tất cả user
     public List<User> findAll() {
         return userRepository.findAll();
@@ -119,14 +93,6 @@ public class UserService {
     // Tìm kiếm user theo tên (phân trang)
     public Page<User> findByNameContainingIgnoreCase(String keyword, Pageable pageable) {
         return userRepository.findByNameContainingIgnoreCase(keyword, pageable);
-    }
-    
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
-    public void createUser(User user) {
-        userRepository.save(user);
     }
     
     public List<User> findByRole(Role role) {
