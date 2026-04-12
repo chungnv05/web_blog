@@ -19,7 +19,7 @@
       <div class="article-header">
         <h1 th:text="${article.title}"></h1>
         <div class="article-meta" style="color:#64748b;display:flex;gap:12px;flex-wrap:wrap;">
-          <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
+          <span>✍️ Tác giả: <a th:href="@{/users/{id}(id=${article.author.id})}" style="text-decoration: none; color: inherit;"><strong th:text="${article.author.name}"></strong></a></span>
           <span>📅 Ngày đăng: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
           <span>📚 Chủ đề: <span th:text="${article.topics.size()}"></span></span>
         </div>
@@ -92,7 +92,9 @@
 
         <div class="sidebar-item">
           <label>✍️ Tác giả</label>
-          <span th:text="${article.author.name}"></span>
+          <a th:href="@{/users/{id}(id=${article.author.id})}" style="text-decoration: none; color: #2563eb; font-weight: 600;">
+            <span th:text="${article.author.name}"></span>
+          </a>
         </div>
 
         <div class="sidebar-item">

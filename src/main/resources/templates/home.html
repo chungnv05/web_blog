@@ -51,7 +51,7 @@
 
     <div class="pagination">
       <a th:if="${pageObj.hasPrevious()}" th:href="@{/(page=${pageObj.number-1})}">← Trang trước</a>
-      <span>Trang <span th:text="${pageObj.number}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
+      <span>Trang <span th:text="${pageObj.number + 1}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
       <a th:if="${pageObj.hasNext()}" th:href="@{/(page=${pageObj.number+1})}">Trang sau →</a>
     </div>
   </div>

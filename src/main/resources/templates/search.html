@@ -37,7 +37,7 @@
       <div class="pagination" style="margin-top: 25px;" th:if="${users.totalPages > 1}">
         <a th:if="${users.hasPrevious()}"
            th:href="@{/search(keyword=${keyword},page_users=${users.number-1})}">← Trước</a>
-        <span th:text="${users.number} + '/' + ${users.totalPages}"></span>
+        <span th:text="(${users.number} + 1) + '/' + ${users.totalPages}"></span>
         <a th:if="${users.hasNext()}"
            th:href="@{/search(keyword=${keyword},page_users=${users.number+1})}">Sau →</a>
       </div>
@@ -56,7 +56,7 @@
             <a th:href="@{/articles/{id}(id=${article.id})}" th:text="${article.title}"></a>
           </h3>
           <div class="article-meta">
-            <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
+            <span>✍️ Tác giả: <a th:href="@{/users/{id}(id=${article.author.id})}" th:text="${article.author.name}" style="text-decoration: none; color: #2563eb; font-weight: 600;"></a></span>
             <span> • 📅 Ngày: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
             <span> • ❤️ Lượt thích: <span th:text="${article.likes.size()}"></span></span>
           </div>
@@ -66,7 +66,7 @@
       <div class="pagination" style="margin-top: 25px;" th:if="${articles.totalPages > 1}">
         <a th:if="${articles.hasPrevious()}"
            th:href="@{/search(keyword=${keyword},page_articles=${articles.number-1})}">← Trước</a>
-        <span th:text="${articles.number} + '/' + ${articles.totalPages}"></span>
+        <span th:text="(${articles.number} + 1) + '/' + ${articles.totalPages}"></span>
         <a th:if="${articles.hasNext()}"
            th:href="@{/search(keyword=${keyword},page_articles=${articles.number+1})}">Sau →</a>
       </div>
