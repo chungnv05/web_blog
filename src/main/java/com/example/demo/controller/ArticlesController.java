@@ -16,13 +16,13 @@ import java.util.List;
 public class ArticlesController {
 
     private final ReadingHistoryService readingHistoryService;
-    private ArticleService articleService;
-    private UserService userService;
-    private CommentService commentService;
-    private LikeService likeService;
-    private TopicService topicService;
-    private SeriesService seriesService;
-    private ReportService reportService;
+    private final ArticleService articleService;
+    private final UserService userService;
+    private final CommentService commentService;
+    private final LikeService likeService;
+    private final TopicService topicService;
+    private final SeriesService seriesService;
+    private final ReportService reportService;
 
     public ArticlesController(ArticleService articleService,
                               UserService userService,
@@ -123,6 +123,7 @@ public class ArticlesController {
         // Truyền dữ liệu cho template
         model.addAttribute("article", article);
         model.addAttribute("comments", comments);
+        model.addAttribute("articleSeriesList", seriesService.findByArticleId(id));
         model.addAttribute("userLikedArticle", userLikedArticle);
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("isOwner", isOwner);
@@ -228,7 +229,7 @@ public class ArticlesController {
             reportContent.append("Lý do: ").append(reportReason);
         }
         if (content != null && !content.isEmpty()) {
-            if (reportContent.length() > 0) {
+            if (!reportContent.isEmpty()) {
                 reportContent.append("\n\n");
             }
             reportContent.append("Chi tiết: ").append(content);

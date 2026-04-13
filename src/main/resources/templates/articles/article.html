@@ -20,8 +20,32 @@
     </div>
   </header>
 
-  <div class="container two-col">
-    <main class="main-content">
+  <div class="container two-col" style="display:flex; gap:8px; align-items:flex-start; padding-left: 0; padding-right: 0;">
+    <aside th:if="${!#lists.isEmpty(articleSeriesList)}" class="sidebar-box" style="flex: 3; margin: 0; align-self:flex-start;">
+      <h3 style="font-size: 16px; margin: 0 0 16px 0;">Các series chứa bài viết này</h3>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div th:each="series : ${articleSeriesList}"
+             style="padding: 14px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);">
+          <div style="font-weight: 700; color: #1f2937; margin-bottom: 8px;" th:text="${series.title}"></div>
+          <div th:if="${series.description != null and !#strings.isEmpty(series.description)}"
+               style="color: #64748b; font-size: 14px; margin-bottom: 10px; line-height: 1.5;"
+               th:text="${series.description}"></div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a th:each="seriesArticle : ${series.articles}"
+               th:href="@{/articles/{id}(id=${seriesArticle.id})}"
+               th:text="${seriesArticle.title}"
+               style="display: block; padding: 10px 12px; border-radius: 8px; background: #fff; border: 1px solid #dbeafe; color: #1d4ed8; text-decoration: none; font-weight: 600; transition: all 0.3s;"
+               onmouseover="this.style.background='#eff6ff'; this.style.borderColor='#93c5fd'; this.style.transform='translateX(4px)'"
+               onmouseout="this.style.background='#fff'; this.style.borderColor='#dbeafe'; this.style.transform='translateX(0)'">
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" style="flex:6; align-self:flex-start;">
       <div class="article-header">
         <h1 th:text="${article.title}"></h1>
         <div class="article-meta" style="color:#64748b;display:flex;gap:12px;flex-wrap:wrap;">
@@ -78,7 +102,8 @@
 
         <div th:if="${isAuthenticated}" class="comment-form">
           <form th:action="@{/articles/{id}/comments(id=${article.id})}" method="post">
-            <textarea name="content" class="comment-textarea" placeholder="Chia sẻ ý kiến của bạn..." required></textarea>
+            <label for="commentContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Nội dung bình luận</label>
+            <textarea id="commentContent" name="content" class="comment-textarea" placeholder="Chia sẻ ý kiến của bạn..." aria-label="Nội dung bình luận" required></textarea>
             <button type="submit" class="comment-submit">💬 Gửi bình luận</button>
           </form>
         </div>
@@ -86,20 +111,20 @@
           <p><a th:href="@{/login}">🔓 Đăng nhập để bình luận</a></p>
         </div>
 
-        <div th:if="${!comments.empty}" th:each="comment : ${comments}" class="comment-item">
+        <div th:if="${!#lists.isEmpty(comments)}" th:each="comment : ${comments}" class="comment-item">
           <div class="comment-author">
             <a th:href="@{/users/{id}(id=${comment.author.id})}" th:text="${comment.author.name}"></a>
             <span class="comment-time" th:text="${#temporals.format(comment.createdAt,'dd/MM/yyyy HH:mm')}"></span>
           </div>
           <div class="comment-content" th:text="${comment.content}"></div>
         </div>
-        <div th:if="${comments.empty}" class="empty-state">
+        <div th:if="${#lists.isEmpty(comments)}" class="empty-state">
           <p>📭 Chưa có bình luận nào. Hãy là người bình luận đầu tiên!</p>
         </div>
       </section>
     </main>
 
-    <aside class="sidebar">
+    <aside class="sidebar" style="flex: 3;">
       <div class="sidebar-box">
         <h3>ℹ️ Thông tin bài viết</h3>
 
@@ -131,6 +156,7 @@
           </div>
         </div>
       </div>
+
         <div th:if="${isOwner}" class="sidebar-box" style="margin-top: 20px;">
             <h3>⚙️ Quản lý bài viết</h3>
 
@@ -176,7 +202,7 @@
           <label style="display:block;font-weight:600;margin-bottom:12px;color:#374151;">Chọn lý do báo cáo:</label>
 
           <div style="display:flex;flex-direction:column;gap:12px;">
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;hover:background:#f3f4f6;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;border:1px solid #e5e7eb;border-radius:8px;transition:all 0.3s;">
               <input type="radio" name="reportReason" value="Vấn đề liên quan đến người dưới 18 tuổi" style="width:18px;height:18px;cursor:pointer;">
               <span style="color:#374151;">Vấn đề liên quan đến người dưới 18 tuổi</span>
             </label>
@@ -215,7 +241,8 @@
 
         <div style="margin-bottom:24px;">
           <label style="display:block;font-weight:600;margin-bottom:12px;color:#374151;">Chi tiết thêm (tùy chọn):</label>
-          <textarea name="content" class="comment-textarea" placeholder="Mô tả chi tiết lý do báo cáo..." style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:100px;"></textarea>
+          <label for="reportContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Chi tiết thêm (tùy chọn)</label>
+          <textarea id="reportContent" name="content" class="comment-textarea" placeholder="Mô tả chi tiết lý do báo cáo..." aria-label="Chi tiết thêm (tùy chọn)" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:100px;"></textarea>
         </div>
 
         <div style="display:flex;gap:12px;">
@@ -255,7 +282,6 @@
 
       // Hiển thị thông báo success
       const form = document.getElementById('reportForm');
-      const formData = new FormData(form);
 
       // Submit form
       form.submit();
