@@ -46,7 +46,7 @@ public class ArticlesController {
     }
 
     // Xử lý submit form tạo bài viết
-    @PostMapping("/articles")
+    @PostMapping("/articles/new")
     public String createArticle(@ModelAttribute("article") Article article,
                                 HttpSession session,
                                 @RequestParam(value = "topics", required = false) List<Long> topicIds) {
@@ -87,11 +87,17 @@ public class ArticlesController {
         // Kiểm tra người dùng hiện tại đã thích bài viết chưa
         boolean userLikedArticle = false;
         boolean isAuthenticated = false;
+        boolean isAuthor = false;
 
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser != null) {
             isAuthenticated = true;
             userLikedArticle = likeService.existsByUserAndArticle(currentUser, article);
+            
+            // kiểm tra xem có phải tác giả không
+            if (article.getAuthor() != null && article.getAuthor().getId().equals(currentUser.getId())) {
+                isAuthor = true;
+            }
         }
 
         // Truyền dữ liệu cho template
@@ -99,6 +105,7 @@ public class ArticlesController {
         model.addAttribute("comments", comments);
         model.addAttribute("userLikedArticle", userLikedArticle);
         model.addAttribute("isAuthenticated", isAuthenticated);
+        model.addAttribute("isAuthor", isAuthor);
 
         return "articles/article"; // render file articles/article.html
     }

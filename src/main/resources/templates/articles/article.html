@@ -530,7 +530,7 @@
         </div>
       </div>
       
-        <div th:if="${isAuthenticated}">
+        <div th:if="${isAuthor}">
             <a th:href="@{/articles/{id}/edit(id=${article.id})}" 
                class="back-btn" 
                style="background:#ffc107; border:none; color:#2c3e50; margin-top:12px;">
