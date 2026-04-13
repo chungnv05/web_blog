@@ -1,130 +1,242 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${user.name} + ' - 👤 Hồ sơ - Blog'">Người dùng - Blog</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${user.name} + ' - 👤 Hồ sơ - Blog'">Người dùng - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tùy chỉnh bố cục riêng cho trang user */
+        .container.user-profile-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr; /* Sidebar cố định 300px, nội dung chiếm phần còn lại */
+            gap: 30px;
+            align-items: start;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .user-avatar-large {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            color: #fff;
+            font-size: 48px;
+            box-shadow: var(--shadow-md);
+            border: 3px solid #fff;
+            animation: float 3s ease-in-out infinite;
+        }
+        .profile-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 12px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+        .info-card {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .info-label {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .info-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        /* Tablet & Mobile responsive */
+        @media (max-width: 950px) {
+            .container.user-profile-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-width: 400px;
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="header-container">
+    <header>
+        <div class="header-container">
+            <div class="logo">👤 Hồ sơ người dùng</div>
+            <div class="header-nav">
+                <a th:if="${session.currentUser != null}" th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'">
+                    <span>🔔 Thông báo</span>
+                    <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" class="badge" style="background: var(--danger); margin-left: 5px; padding: 2px 6px; border-radius: 10px; font-size: 10px;"></span>
+                </a>
+                <a th:href="@{/}" class="btn secondary">← Trang chủ</a>
+            </div>
+        </div>
+    </header>
 
-      <div class="logo">Blog</div>
-      <div style="display: flex; gap: 15px; align-items: center;">
-          <a th:if="${session.currentUser != null}" th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'" style="text-decoration: none; position: relative; padding: 5px 10px; font-size: 14px;">
-              🔔 <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" style="background: red; color: white; border-radius: 50%; padding: 1px 5px; font-size: 9px; position: absolute; top: -5px; right: -5px;"></span>
-              Thông báo
-          </a>
-          <a th:href="@{/}" class="back-link">Trang chủ</a>
-      </div>
+    <div class="container user-profile-layout">
+        <!-- Sidebar bên trái, kích thước nhỏ hơn -->
+        <aside class="sidebar">
+            <div class="profile-header">
+                <div class="user-avatar-large">👤</div>
+                <h2 class="profile-name" th:text="${user.name}"></h2>
+                <div class="mark-badge" style="display: inline-block; padding: 4px 12px; font-size: 13px;">
+                    ⭐ Điểm: <span th:text="${user.mark}">0</span>
+                </div>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-value" th:text="${followerCount != null ? followerCount : user.followers.size()}">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" th:text="${followingCount != null ? followingCount : user.following.size()}">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
+
+            <div class="info-list">
+                <div class="info-card" th:if="${isOwner}">
+                    <div class="info-label">Tên đăng nhập</div>
+                    <div class="info-value" th:text="${user.username}"></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" th:text="${user.email}"></div>
+                </div>
+                <div class="info-card" th:if="${user.gender}">
+                    <div class="info-label">Giới tính</div>
+                    <div class="info-value" th:text="${user.gender}"></div>
+                </div>
+                <div class="info-card" th:if="${user.birth}">
+                    <div class="info-label">Ngày sinh</div>
+                    <div class="info-value" th:text="${#temporals.format(user.birth,'dd/MM/yyyy')}"></div>
+                </div>
+            </div>
+
+            <div class="action-group">
+                <!-- Nút Follow/Unfollow -->
+                <div th:if="${session.currentUser != null and !isSelf}">
+                    <form th:if="${!isFollowing}" th:action="@{/users/{id}/follow(id=${user.id})}" method="post">
+                        <button type="submit" class="action-btn">✨ Theo dõi</button>
+                    </form>
+                    <form th:if="${isFollowing}" th:action="@{/users/{id}/unfollow(id=${user.id})}" method="post">
+                        <button type="submit" class="action-btn danger">💔 Hủy theo dõi</button>
+                    </form>
+                </div>
+
+                <!-- Admin Actions -->
+                <div th:if="${isAdmin && !isOwner}" style="display: flex; flex-direction: column; gap: 8px;">
+                    <form th:action="@{/admin/users/{id}/warn(id=${user.id})}" method="post">
+                        <button type="submit" class="action-btn warn" onclick="return confirm('Cảnh cáo người dùng này?')">
+                            ⚠️ Cảnh cáo
+                        </button>
+                    </form>
+                    <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post">
+                        <button type="submit" class="action-btn danger" onclick="return confirm('Xóa người dùng này?')">
+                            🚫 Xóa tài khoản
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <a th:href="@{/}" class="back-btn" style="margin-top: 15px;">← Về trang chủ</a>
+        </aside>
+
+        <!-- Nội dung chính bên phải, chiếm không gian lớn -->
+        <main class="content">
+            <div class="section-header">
+                <h2>📚 Bài viết của <span th:text="${user.name}"></span></h2>
+                <div th:if="${isOwner}" class="header-nav">
+                    <a th:href="@{/series/create}" class="btn info">➕ Series mới</a>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(user.articles)}" class="empty-state">
+                <div style="font-size: 48px; margin-bottom: 15px;">✍️</div>
+                <h3>Chưa có bài viết nào</h3>
+                <p>Người dùng này vẫn đang chuẩn bị cho những nội dung tuyệt vời.</p>
+            </div>
+
+            <div th:if="${user.articles != null and !#lists.isEmpty(user.articles)}" class="articles-grid">
+                <div th:each="article : ${user.articles}" class="article-item" style="margin-bottom: 20px;">
+                    <a th:href="@{/articles/{id}(id=${article.id})}" style="text-decoration:none; color:inherit; display:block;">
+                        <h3 th:text="${article.title}" style="font-size: 20px;"></h3>
+                        <div class="article-meta">
+                            <span style="margin-right: 15px;">📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+                            <span style="margin-right: 15px;">❤️ <span th:text="${article.likes.size()}"></span></span>
+                            <span>💬 <span th:text="${article.comments.size()}"></span></span>
+                        </div>
+                        <div class="post-topics" style="margin-top: 12px;">
+                            <span th:each="topic : ${article.topics}" class="topic-tag" th:text="${topic.name}"></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${isOwner}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px;">
+                <a th:href="@{/series/list}" class="btn secondary">🗂️ Quản lý Series</a>
+                <a th:href="@{/users/history}" class="btn info">📜 Lịch sử đọc</a>
+            </div>
+        </main>
     </div>
-  </header>
 
-  <div class="container two-col">
-    <aside class="sidebar">
-      <div class="user-avatar" style="height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f8f6a,#3ba17a);border-radius:12px;color:#fff;font-size:48px;">👤</div>
-      <h2 th:text="${user.name}"></h2>
-
-      <div class="info-item" th:if="${isOwner}">
-        <div class="info-label">Tên đăng nhập:</div>
-        <div class="info-value" th:text="${user.username}"></div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-label">Email:</div>
-        <div class="info-value" th:text="${user.email}"></div>
-      </div>
-
-      <div th:if="${user.gender}" class="info-item">
-        <div class="info-label">Giới tính:</div>
-        <div class="info-value" th:text="${user.gender}"></div>
-      </div>
-
-      <div th:if="${user.birth}" class="info-item">
-        <div class="info-label">Ngày sinh:</div>
-        <div class="info-value" th:text="${#temporals.format(user.birth,'dd/MM/yyyy')}"></div>
-
-      </div>
-
-      <div class="mark-badge">
-        Điểm: <span th:text="${user.mark}"></span>
-      </div>
-
-      <div th:if="${isAdmin && !isOwner}" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
-        <form th:action="@{/admin/users/{id}/warn(id=${user.id})}" method="post" style="width:100%;">
-          <button type="submit" onclick="return confirm('Cảnh cáo người dùng này? Họ sẽ bị trừ 5 điểm.')"
-                  style="width:100%;padding:12px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;border-radius:10px;cursor:pointer;font-weight:600;transition:all 0.3s;">
-            CẢNH CÁO!
-          </button>
-        </form>
-
-        <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" style="width:100%;">
-          <button type="submit" onclick="return confirm('Xóa người dùng này? Tất cả bài viết của họ cũng sẽ bị xóa. Hành động này không thể hoàn tác!')"
-                  style="width:100%;padding:12px;border:1px solid #ef4444;background:#fee2e2;color:#991b1b;border-radius:10px;cursor:pointer;font-weight:600;transition:all 0.3s;">
-            XÓA NGƯỜI DÙNG
-          </button>
-        </form>
-      </div>
-
-        <div class="follow-stats" style="margin: 15px 0; display: flex; gap: 15px; font-size: 0.9em; color: #555;">
-            <span><strong><span th:text="${followerCount != null ? followerCount : user.followers.size()}">0</span></strong> Người theo dõi</span>
-            <span><strong><span th:text="${followingCount != null ? followingCount : user.following.size()}">0</span></strong> Đang theo dõi</span>
-        </div>
-
-        <!-- Nút Follow/Unfollow -->
-        <div th:if="${session.currentUser != null and !isSelf}" style="margin-bottom: 20px;">
-            <form th:if="${!isFollowing}" th:action="@{/users/{id}/follow(id=${user.id})}" method="post">
-                <button type="submit" class="follow-btn" style="width: 100%; padding: 10px; background-color: #2f8f6a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Theo dõi</button>
-            </form>
-            <form th:if="${isFollowing}" th:action="@{/users/{id}/unfollow(id=${user.id})}" method="post">
-                <button type="submit" class="unfollow-btn" style="width: 100%; padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Hủy theo dõi</button>
-            </form>
-        </div>
-
-      <a th:href="@{/}" class="back-btn">Quay lại</a>
-    </aside>
-
-    <main class="content">
-      <h2>Bài viết của <span th:text="${user.name}"></span></h2>
-
-       <div th:if="${#lists.isEmpty(user.articles)}" class="empty-state">
-         <p><span th:text="${user.name}"></span> chưa viết bài viết nào</p>
-       </div>
-
-     <div th:if="${user.articles != null and !#lists.isEmpty(user.articles)}" class="articles-list">
-       <a th:each="article : ${user.articles}"
-          th:href="@{/articles/{id}(id=${article.id})}"
-          class="article-item">
-         <h3 th:text="${article.title}"></h3>
-         <div class="article-meta">
-           <span>Ngày: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
-           <span>Thích: <span th:text="${article.likes.size()}"></span></span>
-           <span>Bình luận: <span th:text="${article.comments.size()}"></span></span>
-         </div>
-       </a>
-     </div>
-
-     <div th:if="${isOwner}" style="margin-top:24px;">
-       <a th:href="@{/series/create}"
-          style="display:inline-block;padding:12px 24px;background:#2f8f6a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.3s;"
-          onmouseover="this.style.background='#1e5e4a'"
-          onmouseout="this.style.background='#2f8f6a'">
-         Tạo series mới
-       </a>
-     </div>
-
-      <div th:if="${isOwner}" style="margin-top:24px;">
-        <a th:href="@{/series/list}"
-           style="display:inline-block;padding:12px 24px;background:#2f8f6a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;transition:all 0.3s;"
-           onmouseover="this.style.background='#1e5e4a'"
-           onmouseout="this.style.background='#2f8f6a'">
-          Quản lý series
-        </a>
-      </div>
-
-    </main>
-  </div>
+    <footer style="text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 14px;">
+        <p>&copy; 2024 Blog Cá Nhân. Kết nối tri thức.</p>
+    </footer>
 </body>
-
 </html>
