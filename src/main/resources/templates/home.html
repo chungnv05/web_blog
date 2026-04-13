@@ -13,6 +13,7 @@
     <div class="logo">📖 Blog</div>
 
     <div class="header-nav">
+
       <!-- Khi đã đăng nhập -->
       <th:block th:if="${session.currentUser != null}">
 
@@ -40,6 +41,7 @@
         <form method="get" th:action="@{/}" style="display:inline;">
           <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
           <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
+          <button type="submit" name="form" value="history" class="info">📜 Lịch sử</button>
           <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
         </form>
 

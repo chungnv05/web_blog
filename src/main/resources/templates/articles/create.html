@@ -1,76 +1,119 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tạo bài viết - Blog</title>
-  <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo bài viết - Blog</title>
+
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
+
 <body>
-  <header>
+<header>
     <div class="header-container">
-      <div class="logo">Blog</div>
-      <a th:href="@{/}" class="back-link" style="color:#fff;">Quay lại trang chủ</a>
+        <div class="logo">📖 Blog</div>
+        <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
     </div>
-  </header>
+</header>
 
-  <div class="container two-col">
+<div class="container two-col">
     <main class="main-content">
-      <h1>Tạo bài viết mới</h1>
+        <h1>Tạo bài viết mới</h1>
 
-      <form th:action="@{/articles/new}" method="post" th:object="${article}" class="create-form">
-        <div class="form-group">
-          <label for="title">Tiêu đề</label>
-          <input type="text" id="title" th:field="*{title}" placeholder="Nhập tiêu đề bài viết..." required>
-          <div th:if="${#fields.hasErrors('title')}" class="error-message" th:errors="*{title}"></div>
-        </div>
+        <form th:action="@{/articles/new}" method="post" th:object="${article}" class="create-form">
 
-        <div class="form-group">
-          <label for="content">Nội dung</label>
-          <textarea id="content" th:field="*{content}" name="content" class="ckeditor" rows="10" placeholder="Nhập nội dung bài viết..." required></textarea>
-          <div th:if="${#fields.hasErrors('content')}" class="error-message" th:errors="*{content}"></div>
-        </div>
+            <!-- Title -->
+            <div class="form-group">
+                <label for="title">Tiêu đề</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="Nhập tiêu đề bài viết..." required>
+                <div th:if="${#fields.hasErrors('title')}" class="error-message" th:errors="*{title}"></div>
+            </div>
 
-        <div class="form-group">
-          <label>Chủ đề</label>
-          <div class="topic-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
-            <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
-              <input type="checkbox" th:value="${topic.id}" th:field="*{topics}">
-              <span th:text="${topic.name}"></span>
-            </label>
-          </div>
-          <div th:if="${#fields.hasErrors('topics')}" class="error-message" th:errors="*{topics}"></div>
-        </div>
+            <!-- Content -->
+            <div class="form-group">
+                <label for="content">Nội dung</label>
+                <textarea id="content" th:field="*{content}" class="ckeditor" rows="10" placeholder="Nhập nội dung bài viết..." required></textarea>
+                <div th:if="${#fields.hasErrors('content')}" class="error-message" th:errors="*{content}"></div>
+            </div>
 
-        <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button type="submit">Đăng bài</button>
-          <a th:href="@{/}" class="cancel-btn">Hủy</a>
-        </div>
-      </form>
+            <!-- Quiz -->
+            <button type="button" id="quizBtn" onclick="toggleQuiz()" style="margin-bottom: 10px;">
+                ➕ Tạo Quiz
+            </button>
 
-      <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-      <script>
-        CKEDITOR.replace('content', {
-          height: 400,
-          removePlugins: 'elementspath'
-        });
-      </script>
+            <div id="quiz-section" style="display:none;">
+                <div th:replace="articles/quiz-create :: quiz-form"></div>
+            </div>
+
+            <!-- Topics -->
+            <div class="form-group">
+                <label>Chủ đề</label>
+                <div class="topic-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
+                    <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
+                        <input type="checkbox" th:value="${topic.id}" th:field="*{topics}">
+                        <span th:text="${topic.name}"></span>
+                    </label>
+                </div>
+                <div th:if="${#fields.hasErrors('topics')}" class="error-message" th:errors="*{topics}"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="submit">Đăng bài</button>
+                <a th:href="@{/}" class="cancel-btn">Hủy</a>
+            </div>
+        </form>
+
+        <!-- CKEditor init -->
+        <script>
+            CKEDITOR.replace('content', {
+                height: 400,
+                removePlugins: 'elementspath'
+            });
+        </script>
     </main>
 
     <aside class="sidebar">
-       <div class="sidebar-box">
-         <h3>Hướng dẫn viết bài</h3>
-         <ul style="margin-left:18px;line-height:1.8;">
-           <li>Tiêu đề nên ngắn gọn, súc tích</li>
-           <li>Nội dung có thể dùng Markdown hoặc HTML cơ bản</li>
-           <li>Chọn ít nhất một chủ đề để bài viết dễ tìm kiếm</li>
-         </ul>
-       </div>
+        <div class="sidebar-box">
+            <h3>Hướng dẫn viết bài</h3>
+            <ul style="margin-left:18px;line-height:1.8;">
+                <li>Tiêu đề nên ngắn gọn, súc tích</li>
+                <li>Nội dung có thể dùng Markdown hoặc HTML cơ bản</li>
+                <li>Chọn ít nhất một chủ đề để bài viết dễ tìm kiếm</li>
+            </ul>
+        </div>
 
-       <a th:href="@{/}" class="back-btn">Quay lại trang chủ</a>
+        <a th:href="@{/}" class="back-btn">Quay lại trang chủ</a>
     </aside>
-  </div>
-</body>
+</div>
 
+<!-- Script Quiz -->
+<script>
+    function toggleQuiz() {
+        const el = document.getElementById("quiz-section");
+        const btn = document.getElementById("quizBtn");
+
+        if (el.style.display === "none") {
+            if (typeof questionCount !== "undefined" && questionCount === 0) {
+                addNewQuestion();
+            }
+            el.style.display = "block";
+            btn.innerText = "❌ Hủy tạo Quiz";
+        } else {
+            if (confirm("Bạn có chắc muốn hủy? Toàn bộ câu hỏi sẽ bị xóa!")) {
+                el.style.display = "none";
+                btn.innerText = "➕ Tạo Quiz";
+                if (typeof clearQuizData === "function") {
+                    clearQuizData();
+                }
+            }
+        }
+    }
+</script>
+
+</body>
 </html>

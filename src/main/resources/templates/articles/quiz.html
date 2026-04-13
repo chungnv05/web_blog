@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="quiz-display(quiz)" th:if="${quiz != null}" class="quiz-section">
+    <style>
+        .quiz-section { margin-top: 30px; border-top: 2px dashed var(--border); padding-top: 20px; }
+
+        /* Reset Card & Form */
+        .quiz-section .card {
+            display: block !important; margin-bottom: 20px; padding: 20px;
+            border-left: 5px solid var(--secondary); background: #fff; transition: all 0.3s;
+        }
+        #quizForm { display: none; }
+
+        /* Đáp án chia 2 cột */
+        .options-list { display: flex; flex-wrap: wrap; gap: 15px; }
+        .quiz-option {
+            display: inline-flex; align-items: center; gap: 12px; cursor: pointer;
+            padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border);
+            transition: all 0.2s; flex: 0 0 calc(50% - 8px); box-sizing: border-box;
+        }
+        .quiz-option:hover { background: var(--primary-light); border-color: var(--secondary); }
+        .quiz-option input { width: 18px; height: 18px; accent-color: var(--secondary); }
+
+        /* Feedback & Scoreboard */
+        .feedback { margin-top: 10px; font-weight: bold; display: none; }
+        .feedback.correct { color: #059669; }
+        .feedback.incorrect { color: #dc2626; }
+        .feedback.unanswered { color: #f59e0b; }
+
+        #scoreBoard {
+            display: none; background: #f8fafc; border: 2px solid var(--secondary);
+            border-radius: 15px; padding: 25px; text-align: center; margin-top: 30px;
+            animation: slideUp 0.5s ease-out;
+        }
+        .score-circle {
+            width: 80px; height: 80px; border-radius: 50%; background: var(--secondary);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: bold; margin: 0 auto 15px;
+        }
+        .btn .info{
+            width: 100%; padding: 15px; font-size: 1.1rem;
+        }
+        #rankMessage{
+            margin-bottom: 20px; color: #64748b;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) { .quiz-option { flex: 0 0 100%; } }
+        /* Style cho thông báo chưa đăng nhập */
+        .auth-warning {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #fffbeb; /* Vàng nhạt */
+            border: 1px solid #fde68a; /* Vàng viền */
+            border-radius: 8px;
+            color: #92400e; /* Chữ nâu vàng */
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-warning a {
+            color: var(--secondary);
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+
+    <h2 style="color: var(--primary-dark); margin-bottom: 20px;">🧠 Thử thách kiến thức</h2>
+
+    <div id="startSection" style="padding: 30px; text-align: center; background: var(--primary-light); border-radius: 15px;">
+        <p style="font-size: 1.1rem; margin-bottom: 20px;">Bạn đã sẵn sàng trả lời <strong th:text="${quiz.questions.size()}"></strong> câu hỏi chưa?</p>
+        <button type="button" onclick="startQuiz()" class="btn secondary" style="padding: 12px 30px;">🚀 Bắt đầu làm bài</button>
+    </div>
+
+    <form id="quizForm">
+        <div th:each="question, iterStat : ${quiz.questions}" class="card">
+            <h4 class="quiz-question-title" th:text="'Câu ' + ${iterStat.count} + ': ' + ${question.questionText}"></h4>
+            <div class="options-list">
+                <label th:each="option, optStat : ${question.options}" class="quiz-option">
+                    <input type="radio" th:name="'q' + ${question.id}" th:value="${optStat.index}" th:data-correct="${question.correctIndex}">
+                    <span th:text="${option}"></span>
+                </label>
+            </div>
+            <div th:id="'res-' + ${question.id}" class="feedback"></div>
+        </div>
+        <button type="button" id="submitBtn" onclick="checkQuiz()" class="btn info">✔️ Tính điểm</button>
+        <button type="button" onclick="location.reload()" class="btn secondary" style="width: 180px;">🔄 Làm lại từ đầu</button>
+
+    </form>
+
+    <div id="scoreBoard">
+        <div class="score-circle" id="finalScoreDisplay">0/0</div>
+        <h3 id="rankTitle">Kết quả</h3>
+        <p id="rankMessage"></p>
+        <div th:if="${!isAuthenticated}" class="auth-warning">
+            ⚠️ <span>Vui lòng <a th:href="@{/login}">đăng nhập</a> để lưu kết quả vào lịch sử.</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function startQuiz() {
+            document.getElementById('startSection').style.display = 'none';
+            document.getElementById('quizForm').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('quizForm').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function checkQuiz() {
+            const questions = document.querySelectorAll('.quiz-section .card');
+            const answered = document.querySelectorAll('input[type="radio"]:checked');
+
+            if (answered.length < questions.length) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Chưa xong!',
+                    text: `Bạn mới trả lời được ${answered.length}/${questions.length} câu. Hãy chọn đủ đáp án nhé!`,
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            // Tính điểm
+            let score = 0;
+            questions.forEach(card => {
+                const selected = card.querySelector('input[type="radio"]:checked');
+                const feedback = card.querySelector('.feedback');
+                const correctIdx = selected.getAttribute('data-correct');
+
+                feedback.style.display = 'block';
+                if (selected.value === correctIdx) {
+                    score++;
+                    feedback.className = 'feedback correct';
+                    feedback.innerText = "✅ Chính xác!";
+                    card.style.borderLeftColor = "#059669";
+                } else {
+                    feedback.className = 'feedback incorrect';
+                    feedback.innerText = "❌ Sai rồi! Đáp án là mục " + (parseInt(correctIdx) + 1);
+                    card.style.borderLeftColor = "#dc2626";
+                }
+            });
+
+            // Hiển thị bảng điểm
+            const board = document.getElementById('scoreBoard');
+            const percent = (score / questions.length) * 100;
+
+            document.getElementById('finalScoreDisplay').innerText = `${score}/${questions.length}`;
+            board.style.display = 'block';
+            // document.getElementById('submitBtn').style.display = 'none';
+
+            if (percent === 100) {
+                document.getElementById('rankTitle').innerText = "🏆 Tuyệt hảo!";
+                document.getElementById('rankMessage').innerText = "Bạn đã nắm vững toàn bộ kiến thức!";
+            } else if (percent >= 50) {
+                document.getElementById('rankTitle').innerText = "✨ Khá tốt!";
+                document.getElementById('rankMessage').innerText = "Bạn có hiểu biết tốt về chủ đề này.";
+            } else {
+                document.getElementById('rankTitle').innerText = "📚 Cần cố gắng!";
+                document.getElementById('rankMessage').innerText = "Hãy đọc lại bài viết để nắm rõ hơn nhé.";
+            }
+
+
+            Swal.fire({
+                title: percent >= 50 ? 'Hoàn thành tốt!' : 'Hoàn thành!',
+                html: `Điểm của bạn là: <b>${score}/${questions.length}</b>`,
+                icon: percent >= 50 ? 'success' : 'info',
+                confirmButtonColor: 'var(--primary-dark)'
+            }).then(() => {
+                board.scrollIntoView({ behavior: 'smooth' });
+            });
+            saveQuizHistory(score, questions.length);
+        }
+        function saveQuizHistory(score, total) {
+            const quizId = [[${quiz.id}]];
+            const formData = new FormData();
+            formData.append('score', score);
+            formData.append('total', total);
+
+            fetch(`/quiz/${quizId}/submit`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.text())
+                .then(data => console.log("Server response:", data));
+        }
+    </script>
+</div>
+</body>
+</html>

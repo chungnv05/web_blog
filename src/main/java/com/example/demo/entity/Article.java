@@ -35,7 +35,8 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Like> likes;
-
+    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
+    private Quiz quiz;
     // getters & setters
     public Long getId() {
         return id;
@@ -100,4 +101,13 @@ public class Article {
     public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
+
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+    }
+    
 }
