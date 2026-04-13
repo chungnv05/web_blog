@@ -12,9 +12,11 @@ import java.util.Optional;
 @Service
 public class LikeService {
     private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
 
-    public LikeService(LikeRepository likeRepository) {
+    public LikeService(LikeRepository likeRepository, NotificationService notificationService) {
         this.likeRepository = likeRepository;
+        this.notificationService = notificationService;
     }
 
     // Lấy tất cả like
@@ -27,9 +29,17 @@ public class LikeService {
         return likeRepository.findById(id);
     }
 
-    // Lưu like
+    // Lưu like và tạo thông báo
     public Like save(Like like) {
-        return likeRepository.save(like);
+        Like savedLike = likeRepository.save(like);
+        notificationService.createNotification(
+            like.getArticle().getAuthor(),
+            like.getUser(),
+            like.getArticle(),
+            "LIKE",
+            like.getUser().getName() + " đã thích bài viết của bạn: " + like.getArticle().getTitle()
+        );
+        return savedLike;
     }
 
     // Xóa like theo ID
@@ -46,24 +56,31 @@ public class LikeService {
     public List<Like> findByUserId(Long userId) {
         return likeRepository.findByUserId(userId);
     }
-    
-    
+
+
     public Like findByUserAndArticle(User user, Article article) {
         return likeRepository.findByUserAndArticle(user, article);
     }
 
-    // ✅ Kiểm tra user đã like bài viết chưa
+    // Kiểm tra user đã like bài viết chưa
     public boolean existsByUserAndArticle(User user, Article article) {
         return likeRepository.existsByUserAndArticle(user, article);
     }
 
-    // ✅ Toggle like: nếu đã like thì xóa, chưa like thì thêm
+    //  Toggle like: nếu đã like thì xóa, chưa like thì thêm
     public void toggleLike(User user, Article article) {
         Like like = likeRepository.findByUserAndArticle(user, article);
         if (like != null) {
             likeRepository.delete(like);
         } else {
             likeRepository.save(new Like(user, article));
+            notificationService.createNotification(
+                article.getAuthor(),
+                user,
+                article,
+                "LIKE",
+                user.getName() + " đã thích bài viết của bạn: " + article.getTitle()
+            );
         }
     }
     

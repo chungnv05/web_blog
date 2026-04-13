@@ -7,69 +7,140 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <div class="logo">📖 Blog</div>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <a th:href="@{/series/explore}" class="secondary" style="text-decoration:none;padding:10px 16px;border-radius:8px;transition:all 0.3s;display:inline-block;text-align:center;">📚 Series</a>
-        <form method="get" th:action="@{/}" class="header-nav" style="margin:0;padding:0;display:flex;gap:8px;">
+
+<header>
+  <div class="header-container">
+    <div class="logo">📖 Blog</div>
+
+    <div class="header-nav">
+      <!-- Khi đã đăng nhập -->
+      <th:block th:if="${session.currentUser != null}">
+
+        <!-- Series -->
+        <a th:href="@{/series/explore}" class="secondary"
+           style="text-decoration:none;padding:10px 16px;border-radius:8px;">
+          📚 Series
+        </a>
+
+        <!-- Notification -->
+        <a th:href="@{/notifications}" class="btn"
+           th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'"
+           style="text-decoration: none; position: relative; padding: 10px 15px;">
+          🔔
+          <span th:if="${unreadNotificationsCount > 0}"
+                th:text="${unreadNotificationsCount}"
+                style="background: red; color: white; border-radius: 50%;
+                       padding: 2px 6px; font-size: 10px;
+                       position: absolute; top: 0; right: 0;">
+          </span>
+          Thông báo
+        </a>
+
+        <!-- Menu -->
+        <form method="get" th:action="@{/}" style="display:inline;">
           <button type="submit" name="form" value="user" class="secondary">👤 Tài khoản</button>
           <button type="submit" name="form" value="BXH" class="info">🏆 Xếp hạng</button>
           <button type="submit" name="form" value="logout" class="danger">🚪 Đăng xuất</button>
         </form>
-      </div>
-    </div>
-  </header>
 
-  <div class="container">
-    <div th:if="${isAdmin}" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:12px;padding:24px;margin-bottom:30px;color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;">
-        <div>
-          <h2 style="margin:0 0 8px 0;font-size:24px;font-weight:700;">Bảng quản trị Admin</h2>
-          <p style="margin:0;font-size:14px;opacity:0.95;">Quản lý hệ thống từ đây</p>
-        </div>
-        <a th:href="@{/admin}" style="background:#fff;color:#667eea;padding:12px 24px;border-radius:10px;font-weight:600;text-decoration:none;cursor:pointer;transition:all 0.3s;display:inline-block;">
-          Vào Dashboard
+      </th:block>
+
+      <!-- Khi chưa đăng nhập -->
+      <th:block th:if="${session.currentUser == null}">
+        <a th:href="@{/series/explore}" class="secondary"
+           style="text-decoration:none;padding:10px 16px;border-radius:8px;">
+          📚 Series
         </a>
-      </div>
-    </div>
+        <a th:href="@{/users/rank}" class="btn info">🏆 Xếp hạng</a>
+        <a th:href="@{/login}" class="btn secondary">🔑 Đăng nhập</a>
+        <a th:href="@{/register}" class="btn warn">📝 Đăng ký</a>
+      </th:block>
 
-    <h1>Danh sách bài viết mới nhất</h1>
-
-    <section class="search-section" style="padding: 20px;">
-      <form method="get" th:action="@{/search}" class="search-form">
-        <input type="text" name="keyword" placeholder="🔍 Tìm kiếm bài viết...">
-        <button type="submit">Tìm kiếm</button>
-        <a th:href="@{/filter}" class="btn info">Lọc chủ đề</a>
-        <a th:href="@{/articles/new}" class="btn warn">Tạo bài</a>
-      </form>
-    </section>
-
-    <div class="posts-list">
-      <div th:if="${posts.empty}" class="empty-state">
-        <p>📭 Chưa có bài viết nào. Hãy là người đầu tiên viết bài!</p>
-      </div>
-
-      <div th:each="post : ${posts}">
-        <a th:href="@{/articles/{id}(id=${post.id})}" class="post-card">
-          <h3 th:text="${post.title}"></h3>
-          <div class="post-meta">
-            <strong th:text="${post.author.name}"></strong>
-            • <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
-          </div>
-          <div class="post-topics" th:if="${post.topics}">
-            <span th:each="topic : ${post.topics}" class="topic-tag" th:text="${topic.name}"></span>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <div class="pagination">
-      <a th:if="${pageObj.hasPrevious()}" th:href="@{/(page=${pageObj.number-1})}">← Trang trước</a>
-      <span>Trang <span th:text="${pageObj.number}"></span>/<span th:text="${pageObj.totalPages}"></span></span>
-      <a th:if="${pageObj.hasNext()}" th:href="@{/(page=${pageObj.number+1})}">Trang sau →</a>
     </div>
   </div>
-</body>
+</header>
 
+<div class="container">
+
+  <!-- Admin dashboard -->
+  <div th:if="${isAdmin}"
+       style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+              border-radius:12px;padding:24px;margin-bottom:30px;
+              color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div>
+        <h2 style="margin:0 0 8px 0;">Bảng quản trị Admin</h2>
+        <p style="margin:0;">Quản lý hệ thống từ đây</p>
+      </div>
+
+      <a th:href="@{/admin}"
+         style="background:#fff;color:#667eea;padding:12px 24px;
+                border-radius:10px;text-decoration:none;">
+        Vào Dashboard
+      </a>
+    </div>
+  </div>
+
+  <h1>Danh sách bài viết mới nhất</h1>
+
+  <!-- Search -->
+  <section class="search-section" style="padding: 20px;">
+    <form method="get" th:action="@{/search}" class="search-form">
+      <input type="text" name="keyword" placeholder="🔍 Tìm kiếm bài viết...">
+      <button type="submit">Tìm kiếm</button>
+      <a th:href="@{/filter}" class="btn info">Lọc chủ đề</a>
+      <a th:href="@{/articles/new}" class="btn warn">Tạo bài</a>
+    </form>
+  </section>
+
+  <!-- Posts -->
+  <div class="posts-list">
+
+    <div th:if="${posts.empty}" class="empty-state">
+      <p>📭 Chưa có bài viết nào. Hãy là người đầu tiên viết bài!</p>
+    </div>
+
+    <div th:each="post : ${posts}">
+      <a th:href="@{/articles/{id}(id=${post.id})}" class="post-card">
+        <h3 th:text="${post.title}"></h3>
+
+        <div class="post-meta">
+          <strong th:text="${post.author.name}"></strong>
+          •
+          <span th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+        </div>
+
+        <div class="post-topics" th:if="${post.topics}">
+          <span th:each="topic : ${post.topics}"
+                class="topic-tag"
+                th:text="${topic.name}">
+          </span>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <a th:if="${pageObj.hasPrevious()}"
+       th:href="@{/(page=${pageObj.number-1})}">
+      ← Trang trước
+    </a>
+
+    <span>
+      Trang <span th:text="${pageObj.number + 1}"></span> /
+      <span th:text="${pageObj.totalPages}"></span>
+    </span>
+
+    <a th:if="${pageObj.hasNext()}"
+       th:href="@{/(page=${pageObj.number+1})}">
+      Trang sau →
+    </a>
+  </div>
+
+</div>
+
+</body>
 </html>

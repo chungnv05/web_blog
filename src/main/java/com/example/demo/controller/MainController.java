@@ -180,30 +180,56 @@ public class MainController {
 
         return "users/users_list"; // render file users/users_list.html
     }
-
     // Chi tiết user
     @GetMapping("/users/{id}")
-    public String userDetail(@PathVariable Long id,
-                           HttpSession session,
-                           Model model) {
-        User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public String userDetail(@PathVariable Long id, HttpSession session, Model model) {
+        User user = userService.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Kiểm tra xem có phải admin không
+        User currentUser = (User) session.getAttribute("currentUser");
+
         boolean isAdmin = false;
         boolean isOwner = false;
-        User currentUser = (User) session.getAttribute("currentUser");
-        if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
-            isAdmin = true;
-        }
-        // Kiểm tra xem có phải chủ sở hữu hồ sơ không
-        if (currentUser != null && currentUser.getId().equals(user.getId())) {
-            isOwner = true;
+        boolean isFollowing = false;
+        boolean isSelf = false;
+
+        if (currentUser != null) {
+            isAdmin = currentUser.getRole() == Role.ADMIN;
+            isOwner = currentUser.getId().equals(user.getId());
+            isSelf = isOwner;
+
+            isFollowing = userService.isFollowing(currentUser.getId(), id);
         }
 
         model.addAttribute("user", user);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("isFollowing", isFollowing);
+        model.addAttribute("followerCount", user.getFollowers().size());
+        model.addAttribute("followingCount", user.getFollowing().size());
+
         return "users/user";
+    }
+
+    // Follow user
+    @PostMapping("/users/{id}/follow")
+    public String followUser(@PathVariable Long id, HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) return "redirect:/login";
+
+        userService.follow(currentUser.getId(), id);
+        return "redirect:/users/" + id;
+    }
+
+    // Unfollow user
+    @PostMapping("/users/{id}/unfollow")
+    public String unfollowUser(@PathVariable Long id, HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) return "redirect:/login";
+
+        userService.unfollow(currentUser.getId(), id);
+        return "redirect:/users/" + id;
     }
 
     // Trang cá nhân (lấy từ session)
@@ -213,23 +239,21 @@ public class MainController {
         if (sessionUser == null) {
             return "redirect:/login";
         }
-        
-        /*
-        // Nếu articles chưa được nạp, khởi tạo rỗng
-        if (user.getArticles() == null) {
-            user.setArticles(new ArrayList<>());
-        }
-        */
-        
-        // Nạp lại từ DB để có đầy đủ quan hệ articles
+
         User user = userService.findById(sessionUser.getId())
-                               .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         model.addAttribute("user", user);
-        model.addAttribute("isOwner", true);
         model.addAttribute("isAdmin", sessionUser.getRole() == Role.ADMIN);
+        model.addAttribute("isOwner", true);
+        model.addAttribute("isSelf", true);
+        model.addAttribute("isFollowing", false);
+        model.addAttribute("followerCount", user.getFollowers().size());
+        model.addAttribute("followingCount", user.getFollowing().size());
+
         return "users/user";
     }
+
 
 
 

@@ -6,6 +6,7 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +14,45 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
+    }
+
+    @Transactional
+    public void follow(Long followerId, Long followingId) {
+        if (followerId.equals(followingId)) return;
+        
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new RuntimeException("Follower not found"));
+        User following = userRepository.findById(followingId).orElseThrow(() -> new RuntimeException("User to follow not found"));
+        
+        follower.getFollowing().add(following);
+        userRepository.save(follower);
+
+        notificationService.createNotification(
+            following,
+            follower,
+            null,
+            "FOLLOW",
+            follower.getName() + " đã bắt đầu theo dõi bạn"
+        );
+    }
+
+    @Transactional
+    public void unfollow(Long followerId, Long followingId) {
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new RuntimeException("Follower not found"));
+        User following = userRepository.findById(followingId).orElseThrow(() -> new RuntimeException("User to unfollow not found"));
+        
+        follower.getFollowing().remove(following);
+        userRepository.save(follower);
+    }
+
+    public boolean isFollowing(Long followerId, Long followingId) {
+        User follower = userRepository.findById(followerId).orElse(null);
+        if (follower == null) return false;
+        return follower.getFollowing().stream().anyMatch(u -> u.getId().equals(followingId));
     }
 
     // Lấy tất cả user
@@ -43,7 +80,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // Tìm user theo username (Optional)
+    // Tìm user theo username
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -53,18 +90,9 @@ public class UserService {
         return userRepository.findAllByOrderByMarkDesc();
     }
 
-    // ✅ Tìm kiếm user theo tên (phân trang)
+    // Tìm kiếm user theo tên (phân trang)
     public Page<User> findByNameContainingIgnoreCase(String keyword, Pageable pageable) {
         return userRepository.findByNameContainingIgnoreCase(keyword, pageable);
-    }
-    
-    // getter / setter
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
-    public void createUser(User user) {
-        userRepository.save(user);
     }
     
     public List<User> findByRole(Role role) {
@@ -74,5 +102,4 @@ public class UserService {
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
-
 }
