@@ -28,6 +28,10 @@ public class SeriesService {
         return seriesRepository.findById(id);
     }
 
+    public List<Series> findByArticleId(Long articleId) {
+        return seriesRepository.findDistinctByArticles_Id(articleId);
+    }
+
     public Series save(Series series) {
         return seriesRepository.save(series);
     }

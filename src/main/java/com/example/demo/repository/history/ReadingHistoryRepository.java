@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface ReadingHistoryRepository extends JpaRepository<ReadingHistory, Long> {
     List<ReadingHistory> findByUserOrderByViewedAtDesc(User user);
     Optional<ReadingHistory> findByUserAndArticle(User user, Article article);
+    void deleteByArticle(Article article);
 }

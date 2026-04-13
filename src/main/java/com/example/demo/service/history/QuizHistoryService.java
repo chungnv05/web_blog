@@ -1,6 +1,5 @@
 package com.example.demo.service.history;
 
-import com.example.demo.entity.Question;
 import com.example.demo.entity.Quiz;
 import com.example.demo.entity.QuizHistory;
 import com.example.demo.repository.history.QuizHistoryRepository;
@@ -35,5 +34,9 @@ public class QuizHistoryService {
     }
     public List<QuizHistory> findByUserOrderByCompletedAtDesc(User user) {
         return quizHistoryRepository.findByUserOrderByCompletedAtDesc(user);
+    }
+
+    public void deleteByQuiz(Quiz quiz) {
+        quizHistoryRepository.deleteByQuiz(quiz);
     }
 }

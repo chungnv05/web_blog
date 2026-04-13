@@ -2,8 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Article;
 import com.example.demo.repository.ArticleRepository;
+import com.example.demo.entity.Series;
+import com.example.demo.service.history.ReadingHistoryService;
+import com.example.demo.service.history.QuizHistoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +16,24 @@ import java.util.Optional;
 @Service
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final ReportService reportService;
+    private final NotificationService notificationService;
+    private final ReadingHistoryService readingHistoryService;
+    private final QuizHistoryService quizHistoryService;
+    private final SeriesService seriesService;
 
-    public ArticleService(ArticleRepository articleRepository) {
+    public ArticleService(ArticleRepository articleRepository,
+                          ReportService reportService,
+                          NotificationService notificationService,
+                          ReadingHistoryService readingHistoryService,
+                          QuizHistoryService quizHistoryService,
+                          SeriesService seriesService) {
         this.articleRepository = articleRepository;
+        this.reportService = reportService;
+        this.notificationService = notificationService;
+        this.readingHistoryService = readingHistoryService;
+        this.quizHistoryService = quizHistoryService;
+        this.seriesService = seriesService;
     }
     
     // lấy tất cả bài viết (không phân trang)
@@ -38,8 +57,28 @@ public class ArticleService {
     }
 
     // Xóa bài viết
+    @Transactional
     public void deleteById(Long id) {
-        articleRepository.deleteById(id);
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        deleteArticleInternal(article, id);
+    }
+
+    private void deleteArticleInternal(Article article, Long id) {
+
+        for (Series series : seriesService.findByArticleId(id)) {
+            series.getArticles().removeIf(a -> a.getId().equals(id));
+            seriesService.save(series);
+        }
+
+        reportService.deleteByArticle(article);
+        notificationService.deleteByArticle(article);
+        readingHistoryService.deleteByArticle(article);
+        if (article.getQuiz() != null) {
+            quizHistoryService.deleteByQuiz(article.getQuiz());
+        }
+        articleRepository.delete(article);
     }
 
     // Tìm bài viết theo tác giả
@@ -60,7 +99,10 @@ public class ArticleService {
 
     
     // getter / setter
+    @Transactional
     public void deleteArticle(Long id) {
-        articleRepository.deleteById(id);
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+        deleteArticleInternal(article, id);
     }
 }

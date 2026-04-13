@@ -131,7 +131,24 @@
           </div>
         </div>
       </div>
+        <div th:if="${isOwner}" class="sidebar-box" style="margin-top: 20px;">
+            <h3>⚙️ Quản lý bài viết</h3>
 
+            <a th:href="@{/articles/{id}/edit(id=${article.id})}"
+               style="display: block; padding: 12px 20px; background: #f59e0b; color: white; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 600; margin-bottom: 12px; transition: all 0.3s;"
+               onmouseover="this.style.background='#d97706'"
+               onmouseout="this.style.background='#f59e0b'">
+                ✏️ Chỉnh sửa bài viết
+            </a>
+
+            <a th:href="@{/articles/{id}/delete(id=${article.id})}"
+               onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.');"
+               style="display: block; padding: 12px 20px; background: #ef4444; color: white; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 600; transition: all 0.3s;"
+               onmouseover="this.style.background='#dc2626'"
+               onmouseout="this.style.background='#ef4444'">
+                🗑️ Xóa bài viết
+            </a>
+        </div>
       <div th:if="${isOwner}" class="sidebar-box" style="margin-top: 20px;">
         <h3>📚 Thêm vào Series</h3>
         <a th:href="@{/articles/add-article(articleId=${article.id})}"

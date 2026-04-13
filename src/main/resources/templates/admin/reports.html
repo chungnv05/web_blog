@@ -163,57 +163,57 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo">Quản lý báo cáo </div>
-            <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
-            <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
-        </div>
-    </header>
+<header>
+    <div class="header-container">
+        <div class="logo">Quản lý báo cáo </div>
+        <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
+        <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
+    </div>
+</header>
 
-    <main class="admin-shell">
-        <div class="admin-header">
-            <h1>Xem và xử lý các báo cáo vi phạm từ người dùng</h1>
+<main class="admin-shell">
+    <div class="admin-header">
+        <h1>Xem và xử lý các báo cáo vi phạm từ người dùng</h1>
+    </div>
+
+    <div class="reports-list">
+        <div th:if="${reports.empty}" class="empty-state">
+            <p>Chưa có báo cáo nào trong hệ thống.</p>
         </div>
 
-        <div class="reports-list">
-            <div th:if="${reports.empty}" class="empty-state">
-                <p>Chưa có báo cáo nào trong hệ thống.</p>
+        <div th:each="report : ${reports}" class="report-item">
+            <div class="report-header">
+                <div class="report-title" th:text="'Báo cáo #' + ${report.id}"></div>
+                <div class="report-date" th:text="${#temporals.format(report.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
             </div>
 
-            <div th:each="report : ${reports}" class="report-item">
-                <div class="report-header">
-                    <div class="report-title" th:text="'Báo cáo #' + ${report.id}"></div>
-                    <div class="report-date" th:text="${#temporals.format(report.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
-                </div>
+            <div class="report-section">
+                <div class="report-label">Người báo cáo</div>
+                <div class="report-user" th:text="${report.user.name}"></div>
+            </div>
 
-                <div class="report-section">
-                    <div class="report-label">Người báo cáo</div>
-                    <div class="report-user" th:text="${report.user.name}"></div>
-                </div>
+            <div class="report-section">
+                <div class="report-label">Bài viết bị báo cáo</div>
+                <div class="report-value" th:text="${report.article.title}"></div>
+            </div>
 
-                <div class="report-section">
-                    <div class="report-label">Bài viết bị báo cáo</div>
-                    <div class="report-value" th:text="${report.article.title}"></div>
-                </div>
+            <div class="report-section">
+                <div class="report-label">Lý do và Chi tiết</div>
+                <div class="report-value" th:text="${report.content}"></div>
+            </div>
 
-                <div class="report-section">
-                    <div class="report-label">Lý do và Chi tiết</div>
-                    <div class="report-value" th:text="${report.content}"></div>
-                </div>
-
-                <div class="report-actions">
-                    <a th:href="@{/articles/{id}(id=${report.article.id})}" class="report-btn btn-view">
-                        Xem bài viết
-                    </a>
-                    <form th:action="@{/admin/reports/{id}/delete(id=${report.id})}" method="post" style="flex: 1; min-width: 120px;">
-                        <button type="submit" class="report-btn btn-delete" onclick="return confirm('Bạn chắc chắn muốn xóa báo cáo này?')">
-                            Xóa báo cáo
-                        </button>
-                    </form>
-                </div>
+            <div class="report-actions">
+                <a th:href="@{/articles/{id}(id=${report.article.id})}" class="report-btn btn-view">
+                    Xem bài viết
+                </a>
+                <form th:action="@{/admin/reports/{id}/delete(id=${report.id})}" method="post" style="flex: 1; min-width: 120px;">
+                    <button type="submit" class="report-btn btn-delete" onclick="return confirm('Bạn chắc chắn muốn xóa báo cáo này?')">
+                        Xóa báo cáo
+                    </button>
+                </form>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 </body>
 </html>

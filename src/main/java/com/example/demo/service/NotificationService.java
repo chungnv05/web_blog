@@ -5,6 +5,7 @@ import com.example.demo.entity.Notification;
 import com.example.demo.entity.User;
 import com.example.demo.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,5 +49,15 @@ public class NotificationService {
             }
         }
         notificationRepository.saveAll(notifications);
+    }
+
+    @Transactional
+    public void deleteByArticle(Article article) {
+        notificationRepository.deleteByArticle(article);
+    }
+
+    @Transactional
+    public void deleteByUser(User user) {
+        notificationRepository.deleteByRecipientOrSender(user, user);
     }
 }

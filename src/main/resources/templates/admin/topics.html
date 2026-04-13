@@ -2,48 +2,178 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 Quản lý Chủ đề - Blog</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <title>Quản lý Topic - Blog</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        .header-nav button {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+        .header-nav button:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.6);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        .section-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        table td {
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .back-btn {
+            display: inline-block;
+            padding: 9px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .back-btn.delete {
+            background: #f44336;
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        form input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        form input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        form button {
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div class="logo">Quản lý Chủ đề</div>
-            <a th:href="@{/admin}" class="back-link" style="color:#fff;">← Dashboard</a>
-            <a th:href="@{/}" class="back-link" style="color:#fff;">← Trang chủ</a>
-        </div>
-    </header>
+<!-- Header -->
+<header>
+    <div class="header-container">
+        <div class="logo">📖 Blog</div>
+        <form method="get" th:action="@{/}" class="header-nav">
+            <button type="submit" name="form" value="user">👤 Trang cá nhân</button>
+            <button type="submit" name="form" value="BXH">🏆 Xếp hạng</button>
+            <button type="submit" name="form" value="logout"
+                    style="background: rgba(255,100,100,0.3); border-color: rgba(255,100,100,0.6);">
+                🚪 Đăng xuất
+            </button>
+        </form>
+    </div>
+</header>
 
-    <main class="admin-shell admin-layout">
-        <section class="admin-table-wrap">
-            <h2>Danh sách chủ đề</h2>
-             <table>
-                 <tr>
-                     <th>ID</th>
-                     <th>Tên chủ đề</th>
-                     <th>Hành động</th>
-                 </tr>
-                 <tr th:each="topic : ${topics}">
-                     <td th:text="${topic.id}"></td>
-                     <td th:text="${topic.name}"></td>
-                     <td>
-                         <form th:action="@{/admin/topics/{id}/delete(id=${topic.id})}" method="post" class="inline-form">
-                             <button type="submit" class="danger">Xóa</button>
-                         </form>
-                     </td>
-                 </tr>
-             </table>
-         </section>
+<!-- Main Content -->
+<div class="container">
+    <h1>📂 Quản lý Topic</h1>
 
-         <section class="admin-form">
-             <h3>Thêm chủ đề mới</h3>
-             <form th:action="@{/admin/topics}" method="post" th:object="${newTopic}">
-                 <label for="name">Tên chủ đề</label>
-                 <input type="text" id="name" th:field="*{name}" required>
-                 <button type="submit" style="margin-top:10px;">✓ Thêm</button>
-             </form>
-         </section>
-     </main>
+    <!-- Danh sách topic -->
+    <div class="section-box">
+        <h2>Danh sách hiện tại</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Tên Topic</th>
+                <th>Hành động</th>
+            </tr>
+            <tr th:each="topic : ${topics}">
+                <td th:text="${topic.id}"></td>
+                <td th:text="${topic.name}"></td>
+                <td>
+                    <form th:action="@{/admin/topics/{id}/delete(id=${topic.id})}" method="post">
+                        <button type="submit" class="back-btn delete">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Thêm topic mới -->
+    <div class="section-box">
+        <h2>➕ Thêm Topic mới</h2>
+        <form th:action="@{/admin/topics}" method="post" th:object="${newTopic}">
+            <label for="name">Tên topic:</label>
+            <input type="text" id="name" th:field="*{name}" required>
+            <button type="submit" class="back-btn">Thêm</button>
+        </form>
+    </div>
+
+    <a th:href="@{/admin}" class="back-btn">← Về trang admin</a>
+
+</div>
 </body>
 </html>

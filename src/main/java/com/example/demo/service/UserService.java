@@ -76,7 +76,20 @@ public class UserService {
     }
 
     // Xóa user theo ID
+    @Transactional
     public void deleteById(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return;
+        }
+
+        notificationService.deleteByUser(user);
+
+        for (User follower : new java.util.HashSet<>(user.getFollowers())) {
+            follower.getFollowing().remove(user);
+        }
+
+        user.getFollowing().clear();
         userRepository.deleteById(id);
     }
 

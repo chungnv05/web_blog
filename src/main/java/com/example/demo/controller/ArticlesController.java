@@ -311,4 +311,80 @@ public class ArticlesController {
         return "redirect:/articles/" + articleId;
     }
 
+    @GetMapping("/{id}/edit")
+    public String editArticleForm(@PathVariable Long id, Model model, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id; // chỉ author mới được chỉnh sửa
+        }
+
+        // Truyền dữ liệu sẵn có cho form
+        model.addAttribute("article", article);
+        List<Topic> topics = topicService.findAll();
+        model.addAttribute("topics", topics);
+
+        return "articles/create"; // dùng lại giao diện create.html
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateArticle(@PathVariable Long id,
+                                @ModelAttribute("article") Article articleForm,
+                                @RequestParam(value = "topics", required = false) List<Long> topicIds,
+                                HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id;
+        }
+
+        // Cập nhật dữ liệu
+        article.setTitle(articleForm.getTitle());
+        article.setContent(articleForm.getContent());
+
+        if (topicIds != null) {
+            List<Topic> selectedTopics = topicService.findByIds(topicIds);
+            article.setTopics(selectedTopics);
+        }
+
+        articleService.save(article);
+
+        return "redirect:/articles/" + article.getId();
+    }
+
+
+    // Hiển thị trang confirm xóa
+    @GetMapping("/{id}/delete")
+    public String confirmDelete(@PathVariable Long id, Model model, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id; // chỉ author mới được xóa
+        }
+
+        model.addAttribute("article", article);
+        return "confirm"; // file confirm.html
+    }
+
+    // Xử lý POST xóa
+    @PostMapping("/{id}/delete")
+    public String deleteArticle(@PathVariable Long id, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id;
+        }
+
+        articleService.deleteById(id);
+        return "redirect:/"; // quay về trang chủ sau khi xóa
+    }
+
 }

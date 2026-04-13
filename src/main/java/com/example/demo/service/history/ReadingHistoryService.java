@@ -24,6 +24,10 @@ public class ReadingHistoryService {
     public List<ReadingHistory> findByUserOrderByViewedAtDesc(User user) {
         return historyRepository.findByUserOrderByViewedAtDesc(user);
     }
+
+    public void deleteByArticle(Article article) {
+        historyRepository.deleteByArticle(article);
+    }
 }
 
 

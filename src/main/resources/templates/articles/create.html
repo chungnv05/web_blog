@@ -22,9 +22,10 @@
 
 <div class="container two-col">
     <main class="main-content">
-        <h1>Tạo bài viết mới</h1>
+        <h1 id="pageTitle">Tạo bài viết mới</h1>
 
-        <form th:action="@{/articles/new}" method="post" th:object="${article}" class="create-form">
+        <form id="articleForm" th:object="${article}" th:action="@{/articles/new}" method="post" class="create-form"
+              th:data-article-id="${article.id}">
 
             <!-- Title -->
             <div class="form-group">
@@ -36,7 +37,8 @@
             <!-- Content -->
             <div class="form-group">
                 <label for="content">Nội dung</label>
-                <textarea id="content" th:field="*{content}" class="ckeditor" rows="10" placeholder="Nhập nội dung bài viết..." required></textarea>
+                <textarea id="content" th:field="*{content}" class="ckeditor" rows="10"
+                          placeholder="Nhập nội dung bài viết..." required></textarea>
                 <div th:if="${#fields.hasErrors('content')}" class="error-message" th:errors="*{content}"></div>
             </div>
 
@@ -52,8 +54,10 @@
             <!-- Topics -->
             <div class="form-group">
                 <label>Chủ đề</label>
-                <div class="topic-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
-                    <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
+                <div class="topic-list"
+                     style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
+                    <label th:each="topic : ${topics}"
+                           style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
                         <input type="checkbox" th:value="${topic.id}" th:field="*{topics}">
                         <span th:text="${topic.name}"></span>
                     </label>
@@ -63,8 +67,8 @@
 
             <!-- Actions -->
             <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
-                <button type="submit">Đăng bài</button>
-                <a th:href="@{/}" class="cancel-btn">Hủy</a>
+                <button id="submitBtn" type="submit">Đăng bài</button>
+                <a id="cancelBtn" th:href="@{/}" class="cancel-btn">Hủy</a>
             </div>
         </form>
 
@@ -74,6 +78,17 @@
                 height: 400,
                 removePlugins: 'elementspath'
             });
+
+            (function () {
+                const form = document.getElementById('articleForm');
+                const articleId = form.dataset.articleId;
+                if (articleId) {
+                    form.action = '/articles/' + articleId + '/edit';
+                    document.getElementById('submitBtn').innerText = 'Cập nhật bài viết';
+                    document.getElementById('cancelBtn').href = '/articles/' + articleId;
+                    document.getElementById('pageTitle').innerText = 'Chỉnh sửa bài viết';
+                }
+            })();
         </script>
     </main>
 

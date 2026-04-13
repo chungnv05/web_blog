@@ -51,7 +51,7 @@
         Điểm: <span th:text="${user.mark}"></span>
       </div>
 
-      <div th:if="${isAdmin}" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+      <div th:if="${isAdmin && !isOwner}" style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
         <form th:action="@{/admin/users/{id}/warn(id=${user.id})}" method="post" style="width:100%;">
           <button type="submit" onclick="return confirm('Cảnh cáo người dùng này? Họ sẽ bị trừ 5 điểm.')"
                   style="width:100%;padding:12px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;border-radius:10px;cursor:pointer;font-weight:600;transition:all 0.3s;">
