@@ -1,61 +1,145 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🏷️ Lọc bài viết theo chủ đề - Blog</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏷️ Lọc bài viết theo chủ đề - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .topic-checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .topic-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .topic-checkbox-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateX(5px);
+        }
+        .topic-checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .topic-checkbox-item span {
+            font-weight: 500;
+            color: var(--text);
+        }
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .filter-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .result-count {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <div class="logo">🏷️ Lọc bài viết theo chủ đề</div>
-      <a th:href="@{/}" class="back-link">← Trang chủ</a>
+    <header>
+        <div class="header-container">
+            <div class="logo">🏷️ Bộ lọc thông minh</div>
+            <div class="header-nav">
+                <a th:href="@{/}" class="btn secondary">← Trang chủ</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container two-col">
+        <aside class="sidebar">
+            <div class="sidebar-box">
+                <h3>📚 Chọn chủ đề</h3>
+                <form method="get" th:action="@{/filter}">
+                    <div class="topic-checkbox-group">
+                        <label th:each="topic : ${topics}" class="topic-checkbox-item">
+                            <input type="checkbox" name="topics" th:value="${topic.id}"
+                                   th:checked="${selectedTopics.contains(topic.id)}">
+                            <span th:text="${topic.name}"></span>
+                        </label>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="filter-btn">
+                            <span>🔍 Lọc ngay</span>
+                        </button>
+                        <a th:href="@{/filter}" class="btn warn" style="width: 100%;">🧹 Xóa lọc</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar-box" style="margin-top: 20px;">
+                <p style="font-size: 13px; color: var(--text-light); text-align: center;">
+                    💡 Chọn một hoặc nhiều chủ đề để tìm kiếm bài viết phù hợp.
+                </p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="result-header">
+                <h2>📚 Kết quả tìm kiếm</h2>
+                <span class="result-count" th:text="${articles.size() + ' bài viết'}"></span>
+            </div>
+
+            <div th:if="${articles.empty}" class="empty-state">
+                <div style="font-size: 64px; margin-bottom: 20px;">📭</div>
+                <h3>Không tìm thấy bài viết nào</h3>
+                <p>Hãy thử chọn các chủ đề khác hoặc kiểm tra lại sau.</p>
+                <a th:href="@{/}" class="btn primary" style="margin-top: 20px;">Quay lại Trang chủ</a>
+            </div>
+
+            <div th:if="${!articles.empty}" class="articles-grid">
+                <div th:each="article : ${articles}" class="article-item">
+                    <a th:href="@{/articles/{id}(id=${article.id})}" style="text-decoration:none; color:inherit; display:block;">
+                        <h3 th:text="${article.title}"></h3>
+                        <div class="article-meta">
+                            <span style="margin-right: 15px;">👤 <span th:text="${article.author.name}"></span></span>
+                            <span style="margin-right: 15px;">📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+                            <span>❤️ <span th:text="${article.likes.size()}"></span></span>
+                        </div>
+                        <div class="post-topics" style="margin-top: 15px;">
+                            <span th:each="topic : ${article.topics}" class="topic-tag" th:text="${topic.name}"></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
     </div>
-  </header>
 
-  <div class="container two-col">
-    <aside class="sidebar">
-      <h2>📚 Chủ đề</h2>
-       <form method="get" th:action="@{/filter}" style="display:flex;flex-direction:column;gap:12px;">
-         <div class="topic-group">
-           <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-             <input type="checkbox" name="topics" th:value="${topic.id}"
-                    th:checked="${selectedTopics.contains(topic.id)}">
-             <span th:text="${topic.name}"></span>
-           </label>
-         </div>
-
-         <div class="sidebar-buttons" style="display:flex;flex-direction:column;gap:8px;">
-           <button type="submit">🔍 Lọc bài viết</button>
-           <a th:href="@{/}" class="btn secondary">← Quay lại</a>
-         </div>
-       </form>
-     </aside>
-
-     <main class="content">
-       <h2>📚 Kết quả lọc</h2>
-
-       <div th:if="${articles.empty}" class="empty-state">
-         <p>📭 Không có bài viết nào phù hợp với tiêu chí lọc của bạn</p>
-         <p style="font-size:14px;">Hãy chọn lại chủ đề hoặc quay lại trang chủ</p>
-       </div>
-
-       <div th:if="${!articles.empty}" class="articles-grid">
-         <a th:each="article : ${articles}"
-            th:href="@{/articles/{id}(id=${article.id})}"
-            class="article-card"
-            style="text-decoration:none;color:inherit;">
-           <h3 th:text="${article.title}"></h3>
-           <div class="article-meta">
-             <span>✍️ <span th:text="${article.author.name}"></span></span>
-             <span>📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
-             <span>❤️ <span th:text="${article.likes.size()}"></span></span>
-           </div>
-         </a>
-       </div>
-     </main>
-   </div>
+    <footer style="text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 14px;">
+        <p>&copy; 2024 Blog Cá Nhân. Kết nối tri thức.</p>
+    </footer>
 </body>
-
 </html>
