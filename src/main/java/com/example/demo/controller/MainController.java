@@ -33,7 +33,7 @@ public class MainController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Trang login
+    // Trang login
     // Hiển thị form login
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -73,7 +73,7 @@ public class MainController {
         }
     }
 
-    // ✅ Trang đăng ký
+    // Trang đăng ký
     // Hiển thị form đăng ký
     @GetMapping("/register")
     public String registerForm(Model model) {
@@ -111,7 +111,7 @@ public class MainController {
     }
 
 
-    // 🏠 Trang chủ
+    // Trang chủ
     @GetMapping("/")
     public String home(HttpServletRequest request,
                        HttpSession session,
@@ -161,7 +161,7 @@ public class MainController {
         }
     }
     
-    // ✅ Danh sách user theo mark
+    // Danh sách user theo mark
     @GetMapping("/users/rank")
     public String userRank(Model model) {
         // Lấy danh sách user theo mark giảm dần
@@ -173,7 +173,7 @@ public class MainController {
         return "users/users_list"; // render file users/users_list.html
     }
 
-    // ✅ Chi tiết user
+    // Chi tiết user
     @GetMapping("/users/{id}")
     public String userDetail(@PathVariable Long id, Model model) {
         User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
@@ -181,7 +181,7 @@ public class MainController {
         return "users/user";
     }
 
-    // 👤 Trang cá nhân (lấy từ session)
+    // Trang cá nhân (lấy từ session)
     @GetMapping("/user")
     public String userPage(HttpSession session, Model model) {
         User sessionUser = (User) session.getAttribute("currentUser");

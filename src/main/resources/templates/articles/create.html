@@ -1,45 +1,266 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>✏️ Tạo bài viết - Blog</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <title>Tạo bài viết - Blog</title>
+  {{ form.media }}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .header-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .container h1 {
+      font-size: 28px;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input[readonly] {
+      background: #f5f5f5;
+      cursor: not-allowed;
+    }
+
+    input[type="text"][readonly]:focus {
+      border-color: #e0e0e0;
+      box-shadow: none;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select[multiple] {
+      min-height: 120px;
+    }
+
+    .errorlist {
+      background: #ffebee;
+      border: 1px solid #ef5350;
+      color: #c62828;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      list-style: none;
+      margin-top: 6px;
+    }
+
+    .errorlist li {
+      margin: 4px 0;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 35px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 150px;
+      padding: 14px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(76,175,80,0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .back-btn {
+      background: #eceff1;
+      color: #2c3e50;
+      text-decoration: none;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn:hover {
+      background: #cfd8dc;
+    }
+
+    .info-box {
+      background: #e8f5e9;
+      border-left: 4px solid #4CAF50;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 25px;
+      font-size: 14px;
+      color: #2e7d32;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .container h1 {
+        font-size: 22px;
+      }
+
+      .form-buttons {
+        flex-direction: column;
+      }
+
+      button, .back-btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+
 </head>
 <body>
+  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="logo">📖 Blog</div>
-      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+      <a th:href="@{/}" class="back-link">← Quay lại trang chủ</a>
     </div>
   </header>
 
-  <div class="container two-col">
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Main Content -->
     <main class="main-content">
       <h1>✏️ Tạo bài viết mới</h1>
 
-      <form th:action="@{/articles}" method="post" th:object="${article}" class="create-form">
+      <!-- Form tạo bài viết -->
+      <form method="post" th:object="${article}" class="create-form">
+        <!-- Tiêu đề -->
         <div class="form-group">
           <label for="title">Tiêu đề</label>
           <input type="text" id="title" th:field="*{title}" placeholder="Nhập tiêu đề..." required>
           <div th:if="${#fields.hasErrors('title')}" class="error-message" th:errors="*{title}"></div>
         </div>
 
+        <!-- Nội dung -->
         <div class="form-group">
           <label for="content">Nội dung</label>
           <textarea id="content" th:field="*{content}" rows="10" placeholder="Nhập nội dung..." required></textarea>
           <div th:if="${#fields.hasErrors('content')}" class="error-message" th:errors="*{content}"></div>
         </div>
-
+        <!-- Chuyển TextArea thành CKEditor -->
         <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
         <script>
           CKEDITOR.replace('content');
         </script>
 
+        <!-- Chủ đề -->
         <div class="form-group">
-          <label>📚 Chủ đề</label>
-          <div class="topic-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;">
-            <label th:each="topic : ${topics}" style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:10px;">
+          <label>Chủ đề</label>
+          <div class="topic-list">
+            <label th:each="topic : ${topics}">
               <input type="checkbox" th:value="${topic.id}" th:field="*{topics}">
               <span th:text="${topic.name}"></span>
             </label>
@@ -47,26 +268,17 @@
           <div th:if="${#fields.hasErrors('topics')}" class="error-message" th:errors="*{topics}"></div>
         </div>
 
-        <div class="form-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+        <!-- Nút submit -->
+        <div class="form-actions">
           <button type="submit">✓ Đăng bài</button>
-          <a th:href="@{/}" class="cancel-btn">Hủy</a>
+          <a th:href="@{/}" class="back-btn" style="background: #4CAF50; border: 1px solid #17a327; color: #faf9f5; padding: 15px; border-radius: 6px; display: flex;">← Quay lại trang chủ</a>
         </div>
       </form>
     </main>
 
-    <aside class="sidebar">
-       <div class="sidebar-box">
-         <h3>ℹ️ Hướng dẫn viết bài</h3>
-         <ul style="margin-left:18px;line-height:1.8;">
-           <li>Tiêu đề nên ngắn gọn, súc tích</li>
-           <li>Nội dung có thể dùng Markdown hoặc HTML cơ bản</li>
-           <li>Chọn ít nhất một chủ đề để bài viết dễ tìm kiếm</li>
-         </ul>
-       </div>
 
-       <a th:href="@{/}" class="back-btn">← Quay lại trang chủ</a>
-    </aside>
   </div>
+  
 </body>
 
 </html>

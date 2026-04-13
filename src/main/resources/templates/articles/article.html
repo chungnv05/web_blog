@@ -1,32 +1,445 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${article.title} + ' - 📖 Blog'">Chi tiết bài viết - Blog</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <title>{{ article.title }} - Blog</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+      color: #333;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+      color: white;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 30px;
+    }
+
+    /* Main Content */
+    .main-content {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .article-header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .article-header h1 {
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      line-height: 1.3;
+    }
+
+    .article-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+
+    .article-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .article-body {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    .article-body img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 20px 0;
+    }
+
+    /* Topics */
+    .topic-section {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-left: 4px solid #4CAF50;
+      border-radius: 6px;
+    }
+
+    .topic-section h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .topic-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .topic-tag {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none; /* bỏ gạch chân */
+    }
+
+    /* Like Section */
+    .like-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .like-count {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .like-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .like-button-active {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .like-button-inactive {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .like-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .login-prompt {
+      background: #eceff1;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .login-prompt a {
+      color: #4CAF50;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Comments Section */
+    .comments-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .comments-header {
+      font-size: 20px;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #4CAF50;
+      display: inline-block;
+    }
+
+    .comment-form {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .comment-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+      margin-bottom: 12px;
+      transition: border-color 0.3s;
+    }
+
+    .comment-textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+    }
+
+    .comment-submit {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .comment-submit:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+
+    .comment-item {
+      margin-bottom: 20px;
+      padding: 18px;
+      background: #f9f9f9;
+      border-left: 4px solid #4CAF50;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+
+    .comment-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .comment-author {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .comment-author strong {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .comment-time {
+      color: #99a8b3;
+      font-size: 12px;
+    }
+
+    .comment-content {
+      color: #444;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #99a8b3;
+    }
+
+    .empty-state p {
+      font-size: 15px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-box h3 {
+      font-size: 16px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #4CAF50;
+    }
+
+    .sidebar-item {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .sidebar-item label {
+      color: #7f8c8d;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-item span {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .back-btn {
+      display: block;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .article-header h1 {
+        font-size: 26px;
+      }
+
+      .like-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .like-button {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .main-content {
+        padding: 20px;
+      }
+
+      .article-header h1 {
+        font-size: 22px;
+      }
+
+      .article-meta {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sidebar {
+        gap: 15px;
+      }
+
+      .comment-form {
+        padding: 15px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="logo">📖 Blog</div>
-      <a th:href="@{/}" class="back-link" style="color:#fff;">← Quay lại trang chủ</a>
+      <a th:href="@{/}" class="back-link">← Quay lại trang chủ</a>
     </div>
   </header>
 
-  <div class="container two-col">
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Main Content -->
     <main class="main-content">
+      <!-- Article Header -->
       <div class="article-header">
         <h1 th:text="${article.title}"></h1>
-        <div class="article-meta" style="color:#64748b;display:flex;gap:12px;flex-wrap:wrap;">
-          <span>✍️ Tác giả: <strong th:text="${article.author.name}"></strong></span>
-          <span>📅 Ngày đăng: <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
-          <span>📚 Chủ đề: <span th:text="${article.topics.size()}"></span></span>
+        <div class="article-meta">
+          <span>✍️ <strong th:text="${article.author.name}"></strong></span>
+          <span> 📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy HH:mm')}"></span></span>
+          <span> 📚 <span th:text="${article.topics.size()}"></span> chủ đề</span>
         </div>
       </div>
 
-      <div th:if="${article.topics}" class="topic-section" style="margin-bottom:16px;">
-        <h4>📌 Chủ đề liên quan</h4>
+      <!-- Topics -->
+      <div th:if="${article.topics}" class="topic-section">
+        <h4>📌 Chủ đề liên quan:</h4>
         <div class="topic-list">
           <a th:each="topic : ${article.topics}"
              th:href="@{/filter(topics=${topic.id})}"
@@ -35,31 +448,28 @@
         </div>
       </div>
 
+      <!-- Article Content -->
       <div class="article-body" th:utext="${article.content}"></div>
 
+      <!-- Like Section -->
       <div class="like-section">
-        <div class="like-count">❤️ <strong th:text="${article.likes.size()}"></strong> người thích</div>
-        <div th:if="${isAuthenticated}" style="display:flex;gap:10px;">
+        <div class="like-count">
+          ❤️ <strong th:text="${article.likes.size()}"></strong> người thích bài này
+        </div>
+        <div th:if="${isAuthenticated}">
           <form th:action="@{/articles/{id}/like(id=${article.id})}" method="post" style="display: contents;">
             <button type="submit"
-                    class="like-button"
-                    th:classappend="${userLikedArticle} ? 'like-button-active' : 'like-button-inactive'"
-                    style="padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;transition:all 0.3s;">
-              <span th:text="${userLikedArticle} ? '♥️ Bỏ thích' : '🤍 Thích'"></span>
-            </button>
-          </form>
-          <form th:action="@{/articles/{id}/report(id=${article.id})}" method="post" style="display:inline;">
-            <button type="submit"
-                    style="padding:10px 16px;border-radius:10px;border:1px solid #f59e0b;background:#fef3c7;color:#92400e;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">
-              🚩 Báo cáo
+                    th:classappend="${userLikedArticle} ? 'like-button-active' : 'like-button-inactive'">
+              <span th:text="${userLikedArticle} ? '♥️ Bỏ thích' : '🤍 Thích bài viết'"></span>
             </button>
           </form>
         </div>
         <div th:if="${!isAuthenticated}" class="login-prompt">
-          <a th:href="@{/login}">🔓 Đăng nhập để thích và báo cáo</a>
+          <a th:href="@{/login}">🔓 Đăng nhập để thích bài viết</a>
         </div>
       </div>
 
+      <!-- Comments Section -->
       <section class="comments-section">
         <h2 class="comments-header">💬 Bình luận (<span th:text="${comments.size()}"></span>)</h2>
 
@@ -73,6 +483,7 @@
           <p><a th:href="@{/login}">🔓 Đăng nhập để bình luận</a></p>
         </div>
 
+        <!-- Comments List -->
         <div th:if="${!comments.empty}" th:each="comment : ${comments}" class="comment-item">
           <div class="comment-author">
             <a th:href="@{/users/{id}(id=${comment.author.id})}" th:text="${comment.author.name}"></a>
@@ -86,37 +497,54 @@
       </section>
     </main>
 
+    <!-- Sidebar -->
     <aside class="sidebar">
+      <!-- Info Box -->
       <div class="sidebar-box">
         <h3>ℹ️ Thông tin bài viết</h3>
 
         <div class="sidebar-item">
-          <label>✍️ Tác giả</label>
+          <label>Tác giả</label>
           <span th:text="${article.author.name}"></span>
         </div>
 
         <div class="sidebar-item">
-          <label>📅 Ngày đăng</label>
+          <label>Ngày đăng</label>
           <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span>
         </div>
 
         <div class="sidebar-item">
-          <label>❤️ Lượt thích</label>
-          <span th:text="${article.likes.size()}"></span>
+          <label>Lượt thích</label>
+          <span th:text="${article.likes.size()}"></span> ❤️
         </div>
 
         <div th:if="${article.topics}" class="sidebar-item">
-          <label>📚 Chủ đề</label>
+          <label>Chủ đề</label>
           <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">
             <a th:each="t : ${article.topics}"
                th:href="@{/filter(topics=${t.id})}"
                class="topic-tag"
-               style="font-size: 11px;"
+               style="font-size: 11px; padding: 4px 10px;"
                th:text="${t.name}"></a>
           </div>
         </div>
       </div>
+      
+        <div th:if="${isAuthenticated}">
+            <a th:href="@{/articles/{id}/edit(id=${article.id})}" 
+               class="back-btn" 
+               style="background:#ffc107; border:none; color:#2c3e50; margin-top:12px;">
+               ✏️ Chỉnh sửa
+            </a>
 
+            <a th:href="@{/articles/{id}/delete(id=${article.id})}" 
+               class="back-btn" 
+               style="background:#e74c3c; border:none; color:#2c3e50; margin-top:12px;">
+               🗑️ Xóa
+            </a>
+        </div>
+
+      <!-- Back Button -->
       <a th:href="@{/}" class="back-btn">← Quay lại trang chủ</a>
     </aside>
   </div>

@@ -32,7 +32,13 @@ public class ArticlesController {
 
     // Hiển thị form tạo bài viết
     @GetMapping("/articles/new")
-    public String showCreateForm(Model model) {
+    public String showCreateForm(HttpSession session, Model model) {
+        // nếu chưa đăng nhập, chuyển đến /login
+        User sessionUser = (User) session.getAttribute("currentUser");
+        if (sessionUser == null) {
+            return "redirect:/login";
+        }
+        
         model.addAttribute("article", new Article());
         List<Topic> topics = topicService.findAll();
         model.addAttribute("topics", topics);
@@ -167,4 +173,83 @@ public class ArticlesController {
         return "redirect:/articles/" + id;
     }
 
+    
+        // Hiển thị form chỉnh sửa
+    @GetMapping("/articles/{id}/edit")
+    public String editArticleForm(@PathVariable Long id, Model model, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id; // chỉ author mới được chỉnh sửa
+        }
+
+        // Truyền dữ liệu sẵn có cho form
+        model.addAttribute("article", article);
+        List<Topic> topics = topicService.findAll();
+        model.addAttribute("topics", topics);
+
+        return "articles/create"; // dùng lại giao diện create.html
+    }
+
+    // Xử lý POST chỉnh sửa
+    @PostMapping("/articles/{id}/edit")
+    public String updateArticle(@PathVariable Long id,
+                                @ModelAttribute("article") Article articleForm,
+                                @RequestParam(value = "topics", required = false) List<Long> topicIds,
+                                HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id;
+        }
+
+        // Cập nhật dữ liệu
+        article.setTitle(articleForm.getTitle());
+        article.setContent(articleForm.getContent());
+
+        if (topicIds != null) {
+            List<Topic> selectedTopics = topicService.findByIds(topicIds);
+            article.setTopics(selectedTopics);
+        }
+
+        articleService.save(article);
+
+        return "redirect:/articles/" + article.getId();
+    }
+
+    
+    // Hiển thị trang confirm xóa
+    @GetMapping("/articles/{id}/delete")
+    public String confirmDelete(@PathVariable Long id, Model model, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id; // chỉ author mới được xóa
+        }
+
+        model.addAttribute("article", article);
+        return "confirm"; // file confirm.html
+    }
+
+    // Xử lý POST xóa
+    @PostMapping("/articles/{id}/delete")
+    public String deleteArticle(@PathVariable Long id, HttpSession session) {
+        Article article = articleService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết với id: " + id));
+
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null || !article.getAuthor().getUsername().equals(currentUser.getUsername())) {
+            return "redirect:/articles/" + id;
+        }
+
+        articleService.deleteById(id);
+        return "redirect:/"; // quay về trang chủ sau khi xóa
+    }
+    
 }
