@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.Series;
 import com.example.demo.repository.SeriesRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +37,14 @@ public class SeriesService {
         return seriesRepository.save(series);
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        seriesRepository.deleteById(id);
+        Series series = seriesRepository.findById(id).orElse(null);
+        if (series == null) {
+            return;
+        }
+        series.getArticles().clear();
+        seriesRepository.delete(series);
     }
 
 }

@@ -10,15 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.HashSet;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final SeriesService seriesService;
 
-    public UserService(UserRepository userRepository, NotificationService notificationService) {
+    public UserService(UserRepository userRepository, NotificationService notificationService, SeriesService seriesService) {
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.seriesService = seriesService;
     }
 
     @Transactional
@@ -85,11 +88,16 @@ public class UserService {
 
         notificationService.deleteByUser(user);
 
-        for (User follower : new java.util.HashSet<>(user.getFollowers())) {
+        for (User follower : new HashSet<>(user.getFollowers())) {
             follower.getFollowing().remove(user);
         }
 
         user.getFollowing().clear();
+
+        for (var series : seriesService.getAllByUser(id)) {
+            seriesService.deleteById(series.getId().longValue());
+        }
+
         userRepository.deleteById(id);
     }
 
