@@ -19,7 +19,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()    // cho phép truy cập không cần đăng nhập
+                .requestMatchers("/login", "/register", "/forgot-password", "/reset-password", "/css/**", "/js/**").permitAll()    // cho phép truy cập không cần đăng nhập
                 .anyRequest().permitAll()  // phải đăng nhập. Nếu không thì chuyển về /login
             )
             .csrf(csrf -> csrf.disable()) // ✅ tắt CSRF để form POST không bị chặn
