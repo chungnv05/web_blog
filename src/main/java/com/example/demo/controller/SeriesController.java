@@ -19,12 +19,10 @@ public class SeriesController {
 
     private final SeriesService seriesService;
     private final UserService userService;
-    private final ArticleService articleService;
 
     public SeriesController(SeriesService seriesService, UserService userService, ArticleService articleService) {
         this.seriesService = seriesService;
         this.userService = userService;
-        this.articleService = articleService;
     }
 
     @GetMapping("/create")
@@ -35,11 +33,10 @@ public class SeriesController {
             return "redirect:/login";
         }
 
-        // Tạo một đối tượng Series mới để binding với form
+        // Tạo một đối tượng Series mới để tạo form
         Series series = new Series();
         model.addAttribute("series", series);
 
-        // render file templates/users/create_series.html
         return "users/create_series";
     }
 

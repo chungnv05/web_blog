@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByOrderByMarkDesc();            // ✅ danh sách theo mark giảm dần
     Page<User> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 
     // phân quyền
     List<User> findByRole(Role role);

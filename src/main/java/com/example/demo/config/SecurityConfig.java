@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/register", "/forgot-password", "/reset-password", "/css/**", "/js/**").permitAll()    // cho phép truy cập không cần đăng nhập
                 .anyRequest().permitAll()  // phải đăng nhập. Nếu không thì chuyển về /login
             )
-            .csrf(csrf -> csrf.disable()) // ✅ tắt CSRF để form POST không bị chặn
+            .csrf(csrf -> csrf.disable()) //tắt CSRF để form POST không bị chặn
             .logout(logout -> logout.permitAll());
 
         return http.build();

@@ -43,7 +43,6 @@ public class MainController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Trang login
     // Hiển thị form login
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -83,7 +82,7 @@ public class MainController {
         }
     }
 
-    // ✅ Trang đăng ký
+
     // Hiển thị form đăng ký
     @GetMapping("/register")
     public String registerForm(Model model) {
@@ -103,6 +102,11 @@ public class MainController {
         // Kiểm tra username trùng
         if (userService.existsByUsername(user.getUsername())) {
             result.rejectValue("username", "error.user", "Username đã tồn tại");
+        }
+
+        // Kiểm tra email trùng
+        if (userService.existsByEmail(user.getEmail())) {
+            result.rejectValue("email", "error.user", "Email đã được đăng ký");
         }
 
         // Nếu có lỗi thì quay lại form
@@ -177,7 +181,7 @@ public class MainController {
         }
     }
     
-    // ✅ Danh sách user theo mark
+    // Danh sách user theo mark
     @GetMapping("/users/rank")
     public String userRank(Model model) {
         // Lấy danh sách user theo mark giảm dần
