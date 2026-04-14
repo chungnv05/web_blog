@@ -1,21 +1,410 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
+<<<<<<< HEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${user.name} + ' - 👤 Hồ sơ - Blog'">Người dùng - Blog</title>
+<<<<<<< Updated upstream
   <link rel="stylesheet" th:href="@{/css/styles.css}">
+=======
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 320px 2fr 320px; /* trái - giữa - phải */
+      gap: 30px;
+      padding-bottom: 40px;
+    }
+
+    /* Sidebar - User Info */
+    .sidebar {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .sidebar2 {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      height: fit-content;
+      position: static;
+      top: 100px;
+    }
+
+
+    .user-avatar {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .info-item {
+      margin-bottom: 18px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      color: #7f8c8d;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .info-value {
+      color: #2c3e50;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .mark-badge {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      color: #856404;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 15px;
+    }
+
+    .back-btn {
+      width: 100%;
+      padding: 12px;
+      background: #eceff1;
+      color: #2c3e50;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 6px;
+      display: block;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+
+    .back-btn:hover {
+      background: #cfd8dc;
+    }
+
+    /* Content Area */
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .content h2 {
+      font-size: 22px;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #4CAF50;
+      display: inline-block;
+    }
+
+    /* Articles List */
+    .articles-list {
+      margin-top: 20px;
+    }
+
+    .article-item {
+      padding: 18px;
+      background: #f9f9f9;
+      border-left: 4px solid #4CAF50;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .article-item:hover {
+      background: #f0f0f0;
+      transform: translateX(8px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .article-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .article-item h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+
+    .article-meta {
+      color: #7f8c8d;
+      font-size: 13px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7f8c8d;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .sidebar h2,
+      .content h2 {
+        font-size: 18px;
+      }
+
+      .user-avatar {
+        height: 150px;
+        font-size: 40px;
+      }
+
+      .article-item {
+        padding: 15px;
+      }
+
+      .article-item h3 {
+        font-size: 16px;
+      }
+    }
+  </style>
+=======
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${user.name} + ' - 👤 Hồ sơ - Blog'">Người dùng - Blog</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tùy chỉnh bố cục riêng cho trang user */
+        .container.user-profile-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr; /* Sidebar cố định 300px, nội dung chiếm phần còn lại */
+            gap: 30px;
+            align-items: start;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .user-avatar-large {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            color: #fff;
+            font-size: 48px;
+            box-shadow: var(--shadow-md);
+            border: 3px solid #fff;
+            animation: float 3s ease-in-out infinite;
+        }
+        .profile-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 12px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+        .info-card {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .info-label {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .info-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        /* Tablet & Mobile responsive */
+        @media (max-width: 950px) {
+            .container.user-profile-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-width: 400px;
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
+>>>>>>> 0639e2aae591ec67bc6cfe8db57e1ab5034d971b
+>>>>>>> Stashed changes
 </head>
 <body>
-  <header>
+<header>
     <div class="header-container">
+<<<<<<< Updated upstream
       <div class="logo">Blog</div>
       <a th:href="@{/}" class="back-link">Trang chu</a>
+=======
+        <div class="logo">👤 Hồ sơ người dùng</div>
+        <div class="header-nav">
+            <a th:if="${session.currentUser != null}" th:href="@{/notifications}" class="btn" th:classappend="${unreadNotificationsCount > 0} ? 'warn' : 'secondary'">
+                <span>🔔 Thông báo</span>
+                <span th:if="${unreadNotificationsCount > 0}" th:text="${unreadNotificationsCount}" class="badge" style="background: var(--danger); margin-left: 5px; padding: 2px 6px; border-radius: 10px; font-size: 10px;"></span>
+            </a>
+            <a th:href="@{/}" class="btn secondary">← Trang chủ</a>
+        </div>
+>>>>>>> Stashed changes
     </div>
-  </header>
+</header>
 
-  <div class="container two-col">
+<div class="container user-profile-layout">
+    <!-- Sidebar bên trái, kích thước nhỏ hơn -->
     <aside class="sidebar">
+<<<<<<< Updated upstream
       <div class="user-avatar" style="height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2f8f6a,#3ba17a);border-radius:12px;color:#fff;font-size:48px;">U</div>
       <h2 th:text="${user.name}"></h2>
 
@@ -45,9 +434,78 @@
       </div>
 
       <a th:href="@{/}" class="back-btn">Quay lai</a>
+=======
+        <div class="profile-header">
+            <div class="user-avatar-large">👤</div>
+            <h2 class="profile-name" th:text="${user.name}"></h2>
+            <div class="mark-badge" style="display: inline-block; padding: 4px 12px; font-size: 13px;">
+                ⭐ Điểm: <span th:text="${user.mark}">0</span>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-value" th:text="${followerCount != null ? followerCount : user.followers.size()}">0</span>
+                <span class="stat-label">Followers</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" th:text="${followingCount != null ? followingCount : user.following.size()}">0</span>
+                <span class="stat-label">Following</span>
+            </div>
+        </div>
+
+        <div class="info-list">
+            <div class="info-card" th:if="${isOwner}">
+                <div class="info-label">Tên đăng nhập</div>
+                <div class="info-value" th:text="${user.username}"></div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Email</div>
+                <div class="info-value" th:text="${user.email}"></div>
+            </div>
+            <div class="info-card" th:if="${user.gender}">
+                <div class="info-label">Giới tính</div>
+                <div class="info-value" th:text="${user.gender}"></div>
+            </div>
+            <div class="info-card" th:if="${user.birth}">
+                <div class="info-label">Ngày sinh</div>
+                <div class="info-value" th:text="${#temporals.format(user.birth,'dd/MM/yyyy')}"></div>
+            </div>
+        </div>
+
+        <div class="action-group">
+            <!-- Nút Follow/Unfollow -->
+            <div th:if="${session.currentUser != null and !isSelf}">
+                <form th:if="${!isFollowing}" th:action="@{/users/{id}/follow(id=${user.id})}" method="post">
+                    <button type="submit" class="action-btn">✨ Theo dõi</button>
+                </form>
+                <form th:if="${isFollowing}" th:action="@{/users/{id}/unfollow(id=${user.id})}" method="post">
+                    <button type="submit" class="action-btn danger">💔 Hủy theo dõi</button>
+                </form>
+            </div>
+
+            <!-- Admin Actions -->
+            <div th:if="${isAdmin && !isOwner}" style="display: flex; flex-direction: column; gap: 8px;">
+                <form th:action="@{/admin/users/{id}/warn(id=${user.id})}" method="post">
+                    <button type="submit" class="action-btn warn" onclick="return confirm('Cảnh cáo người dùng này?')">
+                        ⚠️ Cảnh cáo
+                    </button>
+                </form>
+                <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post">
+                    <button type="submit" class="action-btn danger" onclick="return confirm('Xóa người dùng này?')">
+                        🚫 Xóa tài khoản
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <a th:href="@{/}" class="back-btn" style="margin-top: 15px;">← Về trang chủ</a>
+>>>>>>> Stashed changes
     </aside>
 
+    <!-- Nội dung chính bên phải, chiếm không gian lớn -->
     <main class="content">
+<<<<<<< Updated upstream
       <h2>Bai viet cua <span th:text="${user.name}"></span></h2>
 
        <div th:if="${#lists.isEmpty(user.articles)}" class="empty-state">
@@ -58,6 +516,22 @@
    <p>📭 <span th:text="${user.name}"></span> chưa viết bài viết nào</p>
  </div>
 
+=======
+        <div class="section-header">
+            <h2>📚 Bài viết của <span th:text="${user.name}"></span></h2>
+            <div th:if="${isOwner}" class="header-nav">
+                <a th:href="@{/series/create}" class="btn info">➕ Series mới</a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(user.articles)}" class="empty-state">
+            <div style="font-size: 48px; margin-bottom: 15px;">✍️</div>
+            <h3>Chưa có bài viết nào</h3>
+            <p>Người dùng này vẫn đang chuẩn bị cho những nội dung tuyệt vời.</p>
+        </div>
+
+<<<<<<< HEAD
+>>>>>>> Stashed changes
      <div th:if="${user.articles != null and !#lists.isEmpty(user.articles)}" class="articles-list">
        <a th:each="article : ${user.articles}"
           th:href="@{/articles/{id}(id=${article.id})}"
@@ -74,5 +548,33 @@
     </main>
   </div>
 </body>
+=======
+        <div th:if="${user.articles != null and !#lists.isEmpty(user.articles)}" class="articles-grid">
+            <div th:each="article : ${user.articles}" class="article-item" style="margin-bottom: 20px;">
+                <a th:href="@{/articles/{id}(id=${article.id})}" style="text-decoration:none; color:inherit; display:block;">
+                    <h3 th:text="${article.title}" style="font-size: 20px;"></h3>
+                    <div class="article-meta">
+                        <span style="margin-right: 15px;">📅 <span th:text="${#temporals.format(article.createdAt,'dd/MM/yyyy')}"></span></span>
+                        <span style="margin-right: 15px;">❤️ <span th:text="${article.likes.size()}"></span></span>
+                        <span>💬 <span th:text="${article.comments.size()}"></span></span>
+                    </div>
+                    <div class="post-topics" style="margin-top: 12px;">
+                        <span th:each="topic : ${article.topics}" class="topic-tag" th:text="${topic.name}"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
 
+        <div th:if="${isOwner}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px;">
+            <a th:href="@{/series/list}" class="btn secondary">🗂️ Quản lý Series</a>
+            <a th:href="@{/users/history}" class="btn info">📜 Lịch sử đọc</a>
+        </div>
+    </main>
+</div>
+>>>>>>> 0639e2aae591ec67bc6cfe8db57e1ab5034d971b
+
+<footer style="text-align: center; padding: 40px 20px; color: var(--text-light); font-size: 14px;">
+    <p>&copy; 2024 Blog Cá Nhân. Kết nối tri thức.</p>
+</footer>
+</body>
 </html>
